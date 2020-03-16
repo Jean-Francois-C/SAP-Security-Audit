@@ -108,14 +108,14 @@ Check that SAP default passwords have been changed
 ————————————————————————————————————————————
 + Default SAP Accounts and Passwords
 
-   Login		 Password			Clients/Mandants
-   =================================================
+   Login		 Password		Clients/Mandants
+   =================================================================
    SAP* 		PASS or 06071992   	000, 001, 066  
-   DDIC 		19920706			000, 001
-   TSMADM 		PASSWORD			000, 001
-   EARLYWATCH 	SUPPORT				066
-   SAPCPIC 		ADMIN   			000, 001
-   SAPR3 		SAP 				(SAP Local Database)
+   DDIC 		19920706		000, 001
+   TSMADM 		PASSWORD		000, 001
+   EARLYWATCH 	  	SUPPORT			066
+   SAPCPIC 		ADMIN   		000, 001
+   SAPR3 		SAP 			(SAP Local Database)
 
 
 SAP Password Hash Formats in table USR02
@@ -147,17 +147,17 @@ Example of a SECINFO file in new syntax
 D HOST=* USER=* TP=/bin/sap/cpict4				//Program cpict4 is not permitted to be started.
 P HOST=* USER=* TP=/bin/sap/cpict*				//All other programs starting with cpict4 are allowed to be started (on every host and by every user).
 P TP=hugo HOST=local USER=*					//Program hugo is allowed to be started on every local host and by every user.
-P TP=* USER=* USER-HOST=internal HOST=internal 	//All programs started by hosts within the SAP system can be started on all hosts in the system.
+P TP=* USER=* USER-HOST=internal HOST=internal 			//All programs started by hosts within the SAP system can be started on all hosts in the system.
 
 
 Example of a REGINFO file in new syntax
 ———————————————————
 #VERSION=2
 P TP=cpict4 HOST=10.18.210.140					//Program cpict4 is allowed to be registered if it arrives from the host with address 10.18.210.140.
-D TP=* HOST=10.18.210.140						//All other programs from host 10.18.210.140 are not allowed to be registered.
-P TP=cpict2 ACCESS=ld8060,localhost CANCEL=ld8060,localhost        //Program cpict2 is allowed to be registered, but can only be run and stopped on the local host or hostld8060.
-P TP=cpict4									//Program cpict4 is allowed to be registered by any host.
-P TP=* USER=* HOST=internal						//Programs within the system are allowed to register.
+D TP=* HOST=10.18.210.140					//All other programs from host 10.18.210.140 are not allowed to be registered.
+P TP=cpict2 ACCESS=ld8060,localhost CANCEL=ld8060,localhost     //Program cpict2 is allowed to be registered, but can only be run and stopped on the local host or hostld8060.
+P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
+P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 
 
 SAP logging strategies / Audit trails
@@ -531,37 +531,37 @@ Check that SAP default passwords have been changed
 
 + List of default SAP accounts and passwords
 
-    Login		 Password			Clients/Mandants
+    Login		 Password		Clients/Mandants
     =================================================
     SAP* 		PASS or 06071992   	000, 001, 066  
-    DDIC 		19920706			000, 001
-    TSMADM 		PASSWORD			000, 001
-    EARLYWATCH 	SUPPORT				066
-    SAPCPIC 	ADMIN   			000, 001
-    SAPR3 		SAP 				(SAP Local Database)
+    DDIC 		19920706		000, 001
+    TSMADM 		PASSWORD		000, 001
+    EARLYWATCH 		SUPPORT			066
+    SAPCPIC 		ADMIN   		000, 001
+    SAPR3 		SAP 			(SAP Local Database)
 
 	RISK 				USER 				PASSWORD 				CLIENT/Mandants 	REMARK
-	==============================================================================================================
-	Very High 			SAP* 				06071992 / PASS 		001,066,etc… 		Hardcoded kernel user
+	==========================================================================================================================================================================
+	Very High 			SAP* 				06071992 / PASS 			001,066,etc… 		Hardcoded kernel user
 	Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
-	Very High 			DDIC 				19920706 				000,001,… 			User has SAP_ALL
-	High 				CTB_ADMIN 			sap123 					N.A. 				Java user
-	High 				EARLYWATCH 			SUPPORT 				066					Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
-	Medium 				TMSADM				PASSWORD / $1Pawd2&     000, 				sometimes copied to others
-	Medium /Low 		SAPCPIC 			ADMIN 					000,001				Can be used for information retrieval and in some cases for vulnerabilities where only
-																						authentication is needed
+	Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
+	High 				CTB_ADMIN 			sap123 					N.A. 			Java user
+	High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
+	Medium 				TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
+	Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in some cases for vulnerabilities where only
+																	authentication is needed
 																						
 	RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
 	==============================================================================================================
 	HIGH 				SMD_ADMIN 			System 				init1234 				X
 	HIGH 				SMD_BI_RFC 			System 				init1234 				X
 	HIGH 				SMD_RFC 			System 				init1234 				X
-	HIGH 				SOLMAN_ADMIN 		Dialog 				init1234 				X
+	HIGH 				SOLMAN_ADMIN 			Dialog 				init1234 				X
 	HIGH 				SOLMAN_BTC 			System 				init1234 				X
 	HIGH 				SAPSUPPORT 			Dialog 				init1234 				X 		X
-	HIGH 				SOLMAN<SID><CLNT> 	Dialog 				init1234 				X
-	MED/HIGH 			SMDAGENT_<SID> 		System 				init1234 				X 		X
-	MED 				CONTENTSERV 		System 				init1234 				X
+	HIGH 				SOLMAN<SID><CLNT> 		Dialog 				init1234 				X
+	MED/HIGH 			SMDAGENT_<SID> 			System 				init1234 				X 		X
+	MED 				CONTENTSERV 			System 				init1234 				X
 	MED 				SMD_AGT 			System 				init1234    
    
 
