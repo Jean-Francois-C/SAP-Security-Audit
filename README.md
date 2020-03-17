@@ -6,10 +6,10 @@ Training course materials and notes that I created to teach how to perform a tec
 ```
   ➤ [Audit] SAP security controls & Configuration Hardening Review
   ➤ [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions
-  ➤ [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
-  ➤ [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
-  ➤ [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
-  ➤ [Audit & Pentest] Development kits and transactions… (SAP application layer)
-  ➤ [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
-  ➤ [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
+  ➤ [Audit & Pentest] Remote OS commands execution using SAP transactions 
+  ➤ [Audit & Pentest] ABAP Debugger enabled in production environment 
+  ➤ [Audit & Pentest] Sensitive information disclosure from SAP Spool 
+  ➤ [Audit & Pentest] Development kits and transactions… 
+  ➤ [Audit & Pentest] Weak SAP User and Access/Privileges Management
+  ➤ [Audit & Pentest] SAP Hana Database security configuration review 
   ➤ [Pentest] SAP penetration testing using the Metasploit framework
