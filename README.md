@@ -4,7 +4,7 @@ Training course materials and notes that I created to teach how to perform a tec
 
 ### Content
 ```
-  ➤ [Audit] SAP security controls & Configuration Hardening Review
+  ➤ [Audit & Pentest] SAP security controls & Configuration Hardening Review
   ➤ [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions
   ➤ [Audit & Pentest] Remote OS commands execution using SAP transactions 
   ➤ [Audit & Pentest] ABAP Debugger enabled in production environment 
@@ -12,4 +12,4 @@ Training course materials and notes that I created to teach how to perform a tec
   ➤ [Audit & Pentest] Development kits and transactions… 
   ➤ [Audit & Pentest] Weak SAP User and Access/Privileges Management
   ➤ [Audit & Pentest] SAP Hana Database security configuration review 
-  ➤ [Pentest] SAP penetration testing using the Metasploit framework
+  ➤ [Audit & Pentest] SAP penetration testing using the Metasploit framework
