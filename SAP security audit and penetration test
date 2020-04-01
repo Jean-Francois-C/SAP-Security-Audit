@@ -11,7 +11,7 @@ INDEX
 06. [Audit & Pentest] Development kits and transactions… (SAP application layer)
 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
 08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
-09. [Pentest] SAP penetration testing using the Metasploit framework
+09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
 
 
 ========================================================================================================================================================
@@ -722,11 +722,105 @@ How to log into the database to extract the configuration
 
 
 ========================================================================================================================================================
-09. [Pentest] SAP penetration testing using the Metasploit framework
+09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
 ========================================================================================================================================================
 
-SAP Discovery (scans)
-————————————————————————————————————————————
+
+SAP Discovery using NMAP (network port scanner - https://nmap.org)
+——————————————————————————————————————————————————————————————————
+
+> root@kali-linux$ nmap -sS -sV -v -p- 10.13.34.12
+
+	<SNIP>
+	Nmap scan report for 10.13.34.12
+	<SNIP>
+	PORT      STATE SERVICE         VERSION
+	1128/tcp  open  soap            gSOAP 2.7
+	3201/tcp  open  cpq-tasksmart?
+	3299/tcp  open  saprouter?
+	3301/tcp  open  unknown
+	3901/tcp  open  nimsh?
+	4901/tcp  open  sybase-adaptive Sybase Adaptive Server
+	4902/tcp  open  sybase-backup   Sybase Backup Server
+	4903/tcp  open  unknown
+	8101/tcp  open  http            SAP Message Server httpd release 745
+	30101/tcp open  unknown
+	30102/tcp open  unknown
+	30103/tcp open  unknown
+	30104/tcp open  unknown
+	30107/tcp open  unknown
+	30108/tcp open  unknown
+	30111/tcp open  http            BaseHTTPServer 0.3 (Python 2.7.10)
+	30116/tcp open  unknown
+	40000/tcp open  safetynetp?
+	40001/tcp open  unknown
+	40002/tcp open  unknown
+	40080/tcp open  http            SAP Internet Graphics Server httpd
+	46287/tcp open  status          1 (RPC #100024)
+	50000/tcp open  http            SAP WebDispatcher
+	50001/tcp open  ssl/http        SAP WebDispatcher
+	50004/tcp open  unknown
+	50007/tcp open  unknown
+	50013/tcp open  soap            gSOAP 2.7
+	50014/tcp open  ssl/soap        gSOAP 2.7
+	50020/tcp open  unknown
+	50113/tcp open  soap            gSOAP 2.7
+	50114/tcp open  ssl/soap        gSOAP 2.7
+
+
+> root@kali-linux$ nmap -sV -p 80 --script http-sap-netweaver-leak 10.13.34.10
+
+	PORT    STATE SERVICE REASON
+	443/tcp open  https   syn-ack
+	| http-sap-netweaver-leak:
+	|   VULNERABLE:
+	|   Anonymous access to SAP Netweaver Portal
+	|     State: VULNERABLE (Exploitable)
+	|             SAP Netweaver Portal with the Knowledge Management Unit allows attackers to obtain system information
+	|             including file system structure, LDAP users, emails and other information.
+	|
+	|     Disclosure date: 2018-02-1
+	|     Check results:
+	|       Visit /irj/go/km/navigation?Uri=/ to access this SAP instance.
+	|     Extra information:
+	|       &#x7e;system
+	|       discussiongroups
+	|       documents
+	|       Entry&#x20;Points
+	|       etc
+	|       Reporting
+	|     References:
+	|_      https://help.sap.com/saphelp_nw73ehp1/helpdata/en/4a/5c004250995a6ae10000000a42189b/frameset.htm
+
+
+
+SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan)
+———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+=> https://github.com/gelim/nmap-erpscan/blob/master/sap_ports.py
+
+> root@kali-linux$ nmap -p $(sap_ports.py) 10.3.3.7 -sV --open
+	<SNIP>
+	Not shown: 4496 closed ports
+	PORT      STATE SERVICE         VERSION
+	1128/tcp  open  saphostcontrol  SAPHostControl
+	3201/tcp  open  sapjavaenq      SAP Enqueue Server
+	3301/tcp  open  sapgateway      SAP Gateway
+	3901/tcp  open  sapmsgserver    SAP Message Server
+	8101/tcp  open  sapms           SAP Message Server httpd release 745 (SID J45)
+	50000/tcp open  sapnetweawer2   SAP NetWeaver Application Server (Kernel version 7.45, Java version 7.50)
+	50004/tcp open  sapjavap4       SAP JAVA P4 (Potential internal IP 10.3.3.7)
+	50007/tcp open  tcpwrapped
+	50013/tcp open  sapstartservice SAP Maganement Console (SID J45, NR 00)
+	50014/tcp open  tcpwrapped
+	50020/tcp open  sapjoin         SAP Java Cluster Join Service
+	50021/tcp open  jdwp            Java Debug Wire Protocol (Reference Implementation) version 1.8 1.8.0_51
+	50113/tcp open  sapstartservice SAP Maganement Console (SID J45, NR 01)
+	50114/tcp open  tcpwrapped
+	Service Info: Host: java745
+	
+
+SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com)
+—————————————————————————————————————————————————————————————————————————————————————————————
 Module to perform network scans against SAP platforms, which can be found under modules/ auxiliary/scanner/sap/sap_service_discovery.rb: 
 msf  > use auxiliary/scanner/sap/sap_service_discovery.
 msf  > set RHOST 192.168.1.149
@@ -750,7 +844,7 @@ msf auxiliary(sap_icm_urlscan) > show options
 
 
 Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution)
-——————————————————————————————————————————————
+————————————————————————————————————————————————————————————————————————————————————————————
 When enabled, this service allows remote execution of ABAP programs and functions via HTTP SOAP requests. 
 This RFC calling mechanism is protected by HTTP Basic headers (valid SAP credentials are needed), and communications encryption is provided only when HTTPS is enabled. 
 
