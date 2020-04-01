@@ -12,6 +12,6 @@ Training course materials and notes that I created to teach how to perform a tec
   ➤ [Audit & Pentest] Development kits and transactions… 
   ➤ [Audit & Pentest] Weak SAP User and Access/Privileges Management
   ➤ [Audit & Pentest] SAP Hana Database security configuration review 
-  ➤ [Audit & Pentest] SAP penetration testing using the Metasploit framework
+  ➤ [Audit & Pentest] SAP penetration testing using NMAP and the Metasploit framework
 
-Tools: SAPgui, John (password cracker tool), Database clients (e.g. HDBSQL, SQL*plus), Metasploit framework.
+Tools: SAPgui, John (password cracker tool), Database clients (e.g. HDBSQL, SQL*plus), NMAP, Metasploit framework.
