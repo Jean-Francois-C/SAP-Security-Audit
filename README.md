@@ -3,8 +3,8 @@
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
 
 ### Index
-- [0. Useful tools](#Useful-tools)
-- [1. [Audit] SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
+- [0. Useful tools](#0-Useful-tools)
+- [1. SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
 - [2. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
 - [3. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer-)
 - [4. [Audit & Pentest] ABAP Debugger enabled in production environment (SAP application layer)](#04-Audit--Pentest-ABAP-Debugger-enabled-in-production-environment-SAP-application-layer-)
