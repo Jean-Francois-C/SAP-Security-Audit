@@ -66,7 +66,7 @@ Training course materials and research notes that I created to teach how to perf
 > …
 ```
 
-#### Security policy settings (password policy, network encryption, ..)
+#### Check the security policy settings (password policy, network encryption, ..)
 > Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
 > Login / password_Expiration			- Frequency of forced password change (default = 0 = off)
