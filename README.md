@@ -379,6 +379,7 @@ For example, if one of the pre-defined or customized OS commands available is to
   - SM37  (Extended job selection/scheduler)
 > Finally use CG3Z to replace your malicious script (or binary) by the legitimate one.
 
+
 [Privesc technique 4]
 Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
    > Go to SE38 (ABAP editor - create/edit/run ABAP program)
@@ -392,9 +393,11 @@ Execute any OS commands on the server hosting the SAP application/instance using
        or 
        SM37 (Extended job selection/scheduler)
 
+
 [Privesc technique 5]
 Upload a backdoor on the server hosting the SAP application/instance using the transaction CG3Z (File upload)
    > Use CG3Z to overwrite a legitimate script (or binary) with a malicious one that will be more-likely executed later by a legitimate IT admin or a scheduled batch.
+
 
 [Privesc technique 6]
 Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
@@ -516,7 +519,6 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ------------------
 #### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
 
-
 > Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the passwords (depending your permissions)..
 ```
 > SAP Quick Viewer : SQVI 
@@ -575,7 +577,6 @@ Notes:
 + B = BCODE (MD5-based; Maximum pwd length=8, only upper case),
 + F = PASSCODE (SHA1-based; Maximum pwd length=40, case sensitive)
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
-```
 ```
 
 #### Standard Security Reports to run (RSUSR via AID, SA38, or SUIM)
