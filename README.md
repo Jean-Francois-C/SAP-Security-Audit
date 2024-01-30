@@ -2,19 +2,18 @@
 
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
 
-### Content
-```
-- [01. (Audit) SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
-02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions
-03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
-04. [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
-05. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
-06. [Audit & Pentest] Development kits and transactions… (SAP application layer)
-07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
-08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
-09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
-  - [Useful resources](#useful-tools)
-```
+### Index
+
+- [1. [Audit] SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
+- [2. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
+- [3. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer-)
+- [4. [Audit & Pentest] ABAP Debugger enabled in production environment (SAP application layer)](#04-Audit--Pentest-ABAP-Debugger-enabled-in-production-environment-SAP-application-layer-)
+- [5. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)](#05-Audit--Pentest-Sensitive-information-disclosure-from-SAP-Spool-SAP-application-layer-)
+- [6. [Audit & Pentest] Development kits and transactions (SAP application layer)](#06-Audit--Pentest-Development-kits-and-transactions--SAP-application-layer-)
+- [7. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)](#07-Audit--Pentest-Weak-SAP-User-and-Access-Privileges-Management-SAP-application-layer-)
+- [8. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)](#08-Audit--Pentest-SAP-Hana-Database-security-configuration-review-SAP-database-layer-)
+- [9. [Pentest] SAP penetration testing using NMAP and the Metasploit framework](#09-Pentest-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
+
 ### Useful tools
 ```
 ➤ SAPgui - GUI client for SAP ERP (https://community.sap.com/topics/gui)
@@ -27,11 +26,10 @@ Training course materials and research notes that I created to teach how to perf
 
 --------
 #### 01. [Audit] SAP security controls & Configuration Hardening Review
-```
-SAP Security controls (CoBIT)
-—————————————————————————————
-Note: The following list of security controls to check or perform are focus on the "technical" part and not on the "Business" part.
 
+##### SAP Security controls (CoBIT)
+> Note: The following list of security controls to check or perform are focus on the "technical" part and not on the "Business" part.
+```
 - The superuser "SAP*" is properly secured
 - The default passwords for users "DDIC", "SAPCPIC" and "EarlyWatch" have been changed
 - The powerful profiles are restricted (SAP_ALL, SAP_NEW)
@@ -54,10 +52,10 @@ Note: The following list of security controls to check or perform are focus on t
 - SAP Router is configured to act as a gateway to secure communications
 - Remote access by software vendors is controlled adequately
 ```
+
+##### Review the security level of the SAP Architecture/Infrastructure
+> Check that the technology infrastructure is configured to secure communications and operations in the SAP ERP environment.
 ```
-Review the security level of the SAP Architecture/Infrastructure
-—————————————————————————————————————————————————————————————————
-Check that the technology infrastructure is configured to secure communications and operations in the SAP ERP environment.
 > Firewall
 > SNC - Secure Network Communications (ideally should be set to « Privacy Protection »)
 > Secure Store and Forward (SSF) mechanisms and digital signatures
@@ -67,10 +65,10 @@ Check that the technology infrastructure is configured to secure communications 
 > SAP Router configuration
 > …
 ```
+
+##### Security policy settings (password policy, network encryption, ..)
+> Collect and Review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
-Security policy settings (password policy, network encryption, ..)
-———————————————————————————————————————————————————————————————————
-Collect and Review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 > Login / password_Expiration			- Frequency of forced password change (default = 0 = off)
 > Login / min_password				- Minimum password length (default = 3)
 > Login / fails_to_user_lock			- Number of invalid password attempts before user is locked (default = 12)
@@ -79,25 +77,25 @@ Collect and Review the "RSPARAM" configuration file (Use the Tcode SA38 and then
 > Login / disable_multi_gui_login		- (default = 0 = multiple logons permitted)
 NOTE: if multi-login is disabled some users can still be permitted multiple logins via the “login/multi_login_users” setting where user-ids can be listed which can be permitted to logon multiple times
 
-Parameters				Description
-------------------------------------------------------------------------------
-* login/disable_multi_gui_login 	Disable multiple sapgui logons (for same SAP account)
-* login/disable_password_logon		Login/disable_password_logon
-* login/failed_user_auto_unlock		Enable automatic unlock off locked user at midnight
-* login/fails_to_session_end		Number of invalid login attempts until session end
-* login/fails_to_user_lock		Number of invalid login attempts until user lock
+Parameters					Description
+————————————————————————————————————————————————————————————————————————————————————————————————
+* login/disable_multi_gui_login 		Disable multiple sapgui logons (for same SAP account)
+* login/disable_password_logon			Login/disable_password_logon
+* login/failed_user_auto_unlock			Enable automatic unlock off locked user at midnight
+* login/fails_to_session_end			Number of invalid login attempts until session end
+* login/fails_to_user_lock			Number of invalid login attempts until user lock
 * login/isolate_rfc_system_calls	
-* login/min_password_diff		Min. number of chars which differ between old and new password
-* login/min_password_digits		Min. number of digits in passwords
-* login/min_password_letters		Min. number of letters in passwords
-* login/min_password_lng		Minimum Password Length
-* login/min_password_lowercase		Minimum number of lower-case characters in passwords
-* login/min_password_specials		Min. number of special characters in passwords
-* login/min_password_uppercase		Minimum number of upper-case characters in passwords
-* login/multi_login_users		List of exceptional users: multiple logon allowed
-* login/no_automatic_user_sapstar	Control of the automatic login user SAP*
-* login/password_change_for_SSO		Handling of password change enforcements in Single Sign-On situations
-* login/password_change_waittime	Password change possible after # days (since last change)
+* login/min_password_diff			Min. number of chars which differ between old and new password
+* login/min_password_digits			Min. number of digits in passwords
+* login/min_password_letters			Min. number of letters in passwords
+* login/min_password_lng			Minimum Password Length
+* login/min_password_lowercase			Minimum number of lower-case characters in passwords
+* login/min_password_specials			Min. number of special characters in passwords
+* login/min_password_uppercase			Minimum number of upper-case characters in passwords
+* login/multi_login_users			List of exceptional users: multiple logon allowed
+* login/no_automatic_user_sapstar		Control of the automatic login user SAP*
+* login/password_change_for_SSO			Handling of password change enforcements in Single Sign-On situations
+* login/password_change_waittime		Password change possible after # days (since last change)
 * login/password_charset			
 * login/password_compliance_to_current_policy
 * login/password_downwards_compatibility	Password downwards compatibility (8 / 40 characters, case-sensitivity)
@@ -106,30 +104,30 @@ Parameters				Description
 * login/password_logon_usergroup		Users of this group can still logon with passwords
 * login/password_max_idle_initial		Maximum #days a password (set by the admin) can be unused (idle)
 * login/password_max_idle_productive		maximum #days a password (set by the user) can be unused (idle)
-
-Notes:
-The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
+```
+</br>
+> Notes: 
+> The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
 Easy ways to see which users have security policies assigned to them:
-=> Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
-=> Option 2: Directly in table USR02 (field SECURITY_POLICY).
++ Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
++ Option 2: Directly in table USR02 (field SECURITY_POLICY).
+
+##### Check that SAP default passwords have been changed 
+```
+List of default SAP credentials:
+
+  Login		    Password		        Clients/Mandants
+  ————————————————————————————————————————————————————————————————
+  SAP* 		    PASS or 06071992   		000, 001, 066  
+  DDIC 		    19920706		        000, 001
+  TSMADM 	    PASSWORD		        000, 001
+  EARLYWATCH        SUPPORT			066
+  SAPCPIC 	    ADMIN   		        000, 001
+  SAPR3             SAP 			(SAP Local Database)
 ```
 ```
-Check that SAP default passwords have been changed 
-———————————————————————————————————————————————————
-+ Default SAP Accounts and Passwords
-
-   Login		    Password		        Clients/Mandants
-   =================================================
-   SAP* 		    PASS or 06071992   	000, 001, 066  
-   DDIC 		    19920706		        000, 001
-   TSMADM 		  PASSWORD		        000, 001
-   EARLYWATCH 	SUPPORT			        066
-   SAPCPIC 		  ADMIN   		        000, 001
-   SAPR3 		    SAP 			          (SAP Local Database)
-
-
 SAP Password Hash Formats in table USR02
-—————————————————————————————————————————
+————————————————————————————————————————
 If the field "CODVN" = « G » then the password code versions/formats will be B & F
 If the field "CODVN" = « I » then the password code versions/formats will be B, F & H
 
@@ -139,9 +137,8 @@ Notes:
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
 ```
 
+##### Review the SAP Gateway Security Files (SECINFO and REGINFO)
 ```
-Review the SAP Gateway Security Files (SECINFO and REGINFO)
-———————————————————————————————————————————————————————————
 > The "secinfo" security file is used to prevent unauthorized launching of external programs.
 > The file "reginfo" controls the registration of external programs in the gateway. 
 > Useful transaction to display and edit the files = SMGW 
@@ -153,7 +150,7 @@ The default value is:
 ```
 ```
 Example of a SECINFO file in new syntax
-—————————————————————————————————————
+———————————————————————————————————————
 #VERSION=2
 D HOST=* USER=* TP=/bin/sap/cpict4				//Program cpict4 is not permitted to be started.
 P HOST=* USER=* TP=/bin/sap/cpict*				//All other programs starting with cpict4 are allowed to be started (on every host and by every user).
@@ -162,7 +159,7 @@ P TP=* USER=* USER-HOST=internal HOST=internal 			//All programs started by host
 ```
 ```
 Example of a REGINFO file in new syntax
-—————————————————————————————————————
+———————————————————————————————————————
 #VERSION=2
 P TP=cpict4 HOST=10.18.210.140					//Program cpict4 is allowed to be registered if it arrives from the host with address 10.18.210.140.
 D TP=* HOST=10.18.210.140					//All other programs from host 10.18.210.140 are not allowed to be registered.
@@ -170,10 +167,9 @@ P TP=cpict2 ACCESS=ld8060,localhost CANCEL=ld8060,localhost     //Program cpict2
 P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
 P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 ```
-```
-SAP logging strategies / Audit trails
-——————————————————————————————————————
 
+##### SAP logging strategies / Audit trails
+```
 Tracing a Transaction
 —————————————————————
 > SE30 ABAP/4 Runtime Analysis
@@ -185,14 +181,13 @@ LOGS in SAP (programme RDDPRCHK)
 > Existence de la mise en oeuvre de journaux sur les tables 
 > lancer SA38 puis utiliser le programme RDDPRCHK et paramètre REC / Client pour les tables mandant-dépendantes
   et preuve de leur exploitation.
+```
 
-
-Different Types of Users in SAP
-————————————————————————————————
-There are five types of users in sap (useful link: https://www.stechies.com/type-of-users-in-sap/)
-
+##### Different Types of Users in SAP
+> There are five types of users in sap (useful link: https://www.stechies.com/type-of-users-in-sap/)
+```
 Dialog users (A)
------------------
+———————————————— 
 A normal dialog user is used for all logon types by exactly one person. This is used to logon using SAP GUI. During a dialog logon, the system checks for expired/initial passwords.
 The user can change his or her own password. Multiple dialog logons are checked and, if appropriate, logged. These users are used for carrying out normal transactions. 
 This is an interactive type of logon. 
@@ -200,37 +195,36 @@ The initial multiple logons are 6.
 They are set according to companies policy.
 
 System Users (B)
------------------
+————————————————
 These are non interactive users. They are used for background processing and internal communication in the system (such as RFC users for ALE, Workflow, TMS, and CUA). 
 Their passwords cannot be changed by the end users. Only the user administrator can change their passwords. 
 Multiple logon is permitted in these type of users. Dialog logon is not possible for these type of users.
 
 Communication Users (C)
-------------------------
+———————————————————————
 Used for dialog-free communication between systems. 
 It is not possible to use this type of user for a dialog logon. 
 Their passwords are valid for certain period of time so they expire. The users have option to change their own passwords.
 
 Service User (S)
-------------------
+————————————————
 Dialog user available to a larger, anonymous group of users. 
 The system does not check for expired/initial passwords during logon. 
 Only the user administrator can change the passwords. Generally, highly restricted authorizations are given to this type of users.
 
 Reference User (L)
-----------------------
+——————————————————
 A reference user is, like the service user, a general non-person-related user. 
 Dialog logon is not possible with this kind of user. 
 A reference user is used only to assign additional authorizations. 
 To assign a reference user to a dialog user, specify it when maintaining the dialog user on the Roles tab page.
+```
 
-
-========================================================================================================================================================
+------------
 #### 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions  (SAP application layer)
-========================================================================================================================================================
-Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it;
-who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.
 
+> Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.
+```
 There are multiple ways to display & edit tables in SAP
 —————————————————————————————————————————————————————————
 + Standard table browsing and maintenance transactions: 
@@ -246,7 +240,8 @@ There are multiple ways to display & edit tables in SAP
 + The ABAP report/program "RK_SE16N" that can be launched via the transaction SA38 (potential only / not tested).
 + The module pool "SAPMSVMA" that can be launched using SE38 (potential only / not tested).
 + Database monitoring tool (ST04).
-
+```
+```
 Example of tables containing sensitive data
 ————————————————————————————————————————————
 + Useful "User Master Tables"
@@ -278,7 +273,7 @@ Example of tables containing sensitive data
    > T012O - ORBIAN Detail: Bank Accounts, ...
    > BNKA - Bank Master
    > TIBAN - IBAN (International Bank Account Number) 
-
+```
 
 SAP privilege escalation attack - Dump SAP password hashes from the table USR02 or the view VUSR02_PWD and crack them with « John The Ripper » 
 ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
