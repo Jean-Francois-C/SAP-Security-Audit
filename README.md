@@ -291,8 +291,7 @@ Tips for SAP passcode cracking:
    > John --session=1 --format=sapg --wordlist=rockyou.txt  <File-containg-password-hashes>
 ```
 
-
-#### SAP privilege escalation technique 1
+#### SAP privilege escalation technique 2
 > Edit sensitive tables (e.g. USR02, USR04, USR10, USR11,…) using ST04 or SM30 or SM31
 ```
 + Edit privilege over the users, authorizations and profiles tables could allow a malevolent person to escalate its privileges via multiple ways.
@@ -399,10 +398,9 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
 [Technique 6] Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
 ```
 
-SAP privilege escalation attack using remote OS commands
-——————————————————————————————————————————————————————————
-Using one or several of the methods described above perform the following attack:
-
+#### SAP privilege escalation attack using remote OS commands
+> Using one or several of the methods described above perform the following attack:
+```
 + Step 1. Get an interactive session on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database with the « <SID>adm » account.
    > Write and run a reverse shell (e.g. PowerShell, Python, Perl, Bash)
       OR
@@ -415,39 +413,37 @@ Using one or several of the methods described above perform the following attack
 + Step 3.  Steal and/or edit sensitive data stored in the SAP database to commit a fraud (for instance, modify bank accounts to receive fund transfers/payments)
 
 + Step 3.bis  Edit SAP tables to add a new SAP user with SAP_ALL privileges and then use this new account to commit fraud.
+```
 
-
-
-Other - SM59 and RSRFCCHECK
-————————————————————————————————
+#### Other / Notes
+```
+RSRFCCHECK
+——————————
 Permet de lister les RFC (sm59) pour lesquels un mot de passe est sauvegarder 
 
-
-Other - Scanning files content in AL11 
-————————————————————————————————————————————
+Scanning files content in AL11 
+———————————————————————————————
 To start this functionality you can press Shift+F1 and a popup will show. Then you can inform which expression you would like to search.
 Simply execute AL11 and then execute /NSU53 immediately afterwards. A report of all authorisations checked will then be displayed.
 
-Other - Deleting a file (needs AL11 + SE37)
-————————————————————————————————————————————
+Deleting a file (needs AL11 + SE37)
+———————————————————————————————————
 Step 1: Go to Transaction SE37, enter Function module name EPS_DELETE_FILE and click on execute button.
 Step 2: Then, enter the File name in the FILE_NAME and the directory path (Excluding the file name) in the DIR_NAME and execute
 Step 3: Finally use the AL11 transaction to check that the file has been deleted.
 
 http://quelquepart.biz/article26/cure-de-rajeunissement-pour-al11
+```
+------------
+### 04. [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
 
-
-
-========================================================================================================================================================
-04. [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
-========================================================================================================================================================
-One of the major risks in SAP is its powerful debugging environment with the ability to stop each program and enter debugging mode while the program continues running (including the ability to change values at run time). 
+> One of the major risks in SAP is its powerful debugging environment with the ability to stop each program and enter debugging mode while the program continues running (including the ability to change values at run time). 
 The debugger allows bypassing certain controls (like authorization checks) and changing the system return-code (SY-SUBRC) for authorizations checks from Failed (4) to Succeeded (0).
 This could allow a hacker to either change an account number while running a payment program or change a report selection value or change the password of SAP privileged account.
 
 
-SAP privilege escalation attack - Bypass security controls with the ABAP Debugger
-————————————————————————————————————————————————————————————————————————————————
+#### SAP privilege escalation attack - Bypass security controls with the ABAP Debugger
+```
 + If the ABAP Debugger is enabled in production, a malevolent person having read-only access to SAP tables with transactions such as SE16 or SE16n could bypass controls (authorizations checks) and modify data to perform a privilege escalation attack and/or a financial fraud. 
    > How-to: 
       https://sapbasissolutions.wordpress.com/2017/10/12/how-to-edit-sap-tables-without-coding-or-debugging/
@@ -456,10 +452,10 @@ SAP privilege escalation attack - Bypass security controls with the ABAP Debugge
    > How-to: 
       https://www.erpworkbench.com/sap-security/bypass/bypass-tcode.htm
       https://blogs.sap.com/2013/09/06/abap-tip-and-trick-to-break-tcode-access-to-not-so-authorized-tcodes/
+```
 
-
-Defense tips & Recommendations
-————————————————————————————————————————————
+#### Defense tips & Recommendations
+```
 + Remove debugging authorizations from all users while granting privileged access to users that really have to enter the debugging environment.
 
 + Define debugging as a sensitive authorization and receive an alert for when someone is granted such authorization.
@@ -471,105 +467,103 @@ Defense tips & Recommendations
    > If a user replace variables (with the debugging mode) it creates a system log message; check SM21 !
 
 + Eliminate authorization to change values in the debugger, and instead permit only display options.
+```
 
-
-========================================================================================================================================================
+------------
 #### 05. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
-========================================================================================================================================================
-One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
+
+> One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
 Many times the spool request is not deleted from the spool (for a very long time), even after the content is printed. Clearly, this turns the SAP spool into an excellent source for hackers to find information about money transfer slips, monthly pay-slips, check printouts, purchase orders and more.
 Furthermore, most users have access to the SAP spool (directly via T-Code SP01 or indirectly via T-Code SM37), and most organizations enable unlimited access to the spool items, including the options to view, download and re-print the content.
 
-Defense tips & Recommendations
-————————————————————————————————
+#### Defense tips & Recommendations
+```
 + Inspect which users access SAP spool items, especially those that were not created by them.
 + Define sensitive spool items by criteria and alert when they are accessed.
+```
 
-
-========================================================================================================================================================
-#### 06. [Audit & Pentest] Development kits and transactions…. (SAP application layer)
-========================================================================================================================================================
-
-
+--------------
+### 06. [Audit & Pentest] Development kits and transactions…. (SAP application layer)
+```
 SAP Developper/ABAP/Workbench
-————————————————————————————————————
- SE36 ABAP/4: Logical Databases
- SE37 ABAP/4 Function Modules
- SE38 ABAP/4 Program Development
- SE80 ABAP/4 Development Workbench
- SE81 SAP Application Hierarchy
- SE82 Customer Application Hierarchy
- SE84 ABAP/4 Repository Information System
- SE86 ABAP/4 Repository Information System 
-
+—————————————————————————————
+> SE36 ABAP/4: Logical Databases
+> SE37 ABAP/4 Function Modules
+> SE38 ABAP/4 Program Development
+> SE80 ABAP/4 Development Workbench
+> SE81 SAP Application Hierarchy
+> SE82 Customer Application Hierarchy
+> SE84 ABAP/4 Repository Information System
+> SE86 ABAP/4 Repository Information System 
+```
+```
 kit de développement RFC
-————————————————————————————————————
+—————————————————————————
 Le kit de développement RFC permet de créer / modifier / supprimer une interface de type RFC (Remote Function Call). 
 Il est installé en standard par SAP.
 La gestion des liaisons RFC est réservée à un groupe restreint d’administrateurs clairement identifiés. La liste est tenue à jour.
 > suppression du kit de développement RFC (SDK « RFCSDK ») sur l’environnement de production.
-
+```
+```
 Remove developer keys from productive systems
+—————————————————————————————————————————————
 Many auditors check on productive SAP systems if any developer keys exist (in table DEVACCESS). 
 If there are any, this might become a finding that can easily avoid (… although the system is properly protected against changes in SCC4 and SE03).
+```
 
-
-
-========================================================================================================================================================
+------------------
 #### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
-========================================================================================================================================================
 
-Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the passwords (depending your permissions)..
-=========================================================================================================================================================
+
+> Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the passwords (depending your permissions)..
+```
 > SAP Quick Viewer : SQVI 
 > SAP Standard query : SQ01 
 > ST04
 > SE16
 > SE16n
 > SCMP  (View / Table Comparison)
-	
+```	
 
-Check that SAP default passwords have been changed 
-===================================================
+#### Check that SAP default passwords have been changed 
 > This can be done by testing manually the default logins and passwords or using a script.
 > This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
-
+```
 + List of default SAP accounts and passwords
+  
+  Login		Password		Clients/Mandants
+  ————————————————————————————————————————————————————————————
+  SAP* 		PASS or 06071992   	000, 001, 066  
+  DDIC 		19920706		000, 001
+  TSMADM 	PASSWORD		000, 001
+  EARLYWATCH 	SUPPORT			066
+  SAPCPIC 	ADMIN   		000, 001
+  SAPR3 	SAP 			(SAP Local Database)
 
-    Login		 Password		Clients/Mandants
-    =================================================
-    SAP* 		PASS or 06071992   	000, 001, 066  
-    DDIC 		19920706		000, 001
-    TSMADM 		PASSWORD		000, 001
-    EARLYWATCH 		SUPPORT			066
-    SAPCPIC 		ADMIN   		000, 001
-    SAPR3 		SAP 			(SAP Local Database)
-
-	RISK 				USER 				PASSWORD 				CLIENT/Mandants 	REMARK
-	==========================================================================================================================================================================
-	Very High 			SAP* 				06071992 / PASS 			001,066,etc… 		Hardcoded kernel user
-	Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
-	Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
-	High 				CTB_ADMIN 			sap123 					N.A. 			Java user
-	High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
-	Medium 				TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
-	Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in some cases for vulnerabilities where only
-																	authentication is needed
-																						
-	RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
-	==============================================================================================================
-	HIGH 				SMD_ADMIN 			System 				init1234 				X
-	HIGH 				SMD_BI_RFC 			System 				init1234 				X
-	HIGH 				SMD_RFC 			System 				init1234 				X
-	HIGH 				SOLMAN_ADMIN 			Dialog 				init1234 				X
-	HIGH 				SOLMAN_BTC 			System 				init1234 				X
-	HIGH 				SAPSUPPORT 			Dialog 				init1234 				X 		X
-	HIGH 				SOLMAN<SID><CLNT> 		Dialog 				init1234 				X
-	MED/HIGH 			SMDAGENT_<SID> 			System 				init1234 				X 		X
-	MED 				CONTENTSERV 			System 				init1234 				X
-	MED 				SMD_AGT 			System 				init1234    
-   
-
+  RISK 				USER 				PASSWORD 				CLIENT/Mandants 	REMARK
+  ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  Very High 			SAP* 				06071992 / PASS 			001,066,etc… 		Hardcoded kernel user
+  Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
+  Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
+  High 				CTB_ADMIN 			sap123 					N.A. 			Java user
+  High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
+  Medium 			 TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
+  Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in some cases for vulnerabilities where only authentication is needed
+																					
+  RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
+  ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  HIGH 				SMD_ADMIN 			System 				init1234 				X
+  HIGH 				SMD_BI_RFC 			System 				init1234 				X
+  HIGH 				SMD_RFC 			System 				init1234 				X
+  HIGH 				SOLMAN_ADMIN 			Dialog 				init1234 				X
+  HIGH 				SOLMAN_BTC 			System 				init1234 				X
+  HIGH 				SAPSUPPORT 			Dialog 				init1234 				X 
+  HIGH 				SOLMAN<SID><CLNT> 		Dialog 				init1234 				X
+  MED/HIGH 			SMDAGENT_<SID> 			System 				init1234 				X 
+  MED 				CONTENTSERV 			System 				init1234 				X
+  MED 				SMD_AGT 			System 				init1234    
+```
+```
 SAP Password Hash Formats in table USR02
 —————————————————————————————————————————
 If the field "CODVN" = « G » then the password code versions/formats will be B & F
@@ -579,81 +573,83 @@ Notes:
 + B = BCODE (MD5-based; Maximum pwd length=8, only upper case),
 + F = PASSCODE (SHA1-based; Maximum pwd length=40, case sensitive)
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
+```
+```
 
-
-Standard Security Reports to run (RSUSR via AID, SA38, or SUIM)
-————————————————————————————————————————————————————————————————
+#### Standard Security Reports to run (RSUSR via AID, SA38, or SUIM)
+```
 > RSUSR003 – Check passwords for SAP* and DDIC 
 > RSUSR006 – locked users / unsuccessful login attempts
 > RSUSR200 - Users with original passwords, users not logged in for xx days, users who have not changed password in xx days
 > RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
+```
 
-List of powerful SAP transactions
-=====================================
-	> DBxx  		– Database related transactions
-	> SCC4, SCC5 		- Client administration
-	> SE01, SE10 		- CTS / TMS commands
-	> SE38 			– ABAP Editor  (display, edit, execute ABAP source code)
-	> SA38			– Only allows ABAP source code execution
-	> SE93			– Maintains transactions (ex. create or copy a TCODE)
-	> SM01 			- Lock / unlock transactions
-	> SM12			– Lock entries
-	> SM30, SM31		– Table Maintenance (can be used to display and update table data)
-	> SE11, SE12, SE13, SE14 	- Table structure maintenance
-	> SE14			- The database utility is the interface between the ABAP Dictionary and the relational database underlying the R/3 System.
+#### List of powerful SAP transactions
+```
+> DBxx  			– Database related transactions
+> SCC4, SCC5 			- Client administration
+> SE01, SE10 			- CTS / TMS commands
+> SE38 				– ABAP Editor  (display, edit, execute ABAP source code)
+> SA38				– Only allows ABAP source code execution
+> SE93				– Maintains transactions (ex. create or copy a TCODE)
+> SM01 				- Lock / unlock transactions
+> SM12				– Lock entries
+> SM30, SM31			– Table Maintenance (can be used to display and update table data)
+> SE11, SE12, SE13, SE14 	- Table structure maintenance
+> SE14				- The database utility is the interface between the ABAP Dictionary and the relational database underlying the R/3 System.
 				  It allows you to edit (create, delete and adjust to changes to their definition in the ABAP Dictionary) database objects derived from objects of the ABAP Dictionary.
-	> SE15			– Data Dictionary
-	> ST04			- Database performance monitor (allow to send SQL request to the database)
-   	> SM32			– Updates Table USR40 with invalid passwords
-	> SM3 			– Displays and deletes processing job logs
-	> SM36/SM37		– Schedule Background Job 
-	> SM49			– Execute external operating system commands
-	> SM52			– Execute operating system commands
-	> SM59			– Maintain Remote Function Calls destination definitions
-	> SM69			– Maintain external commands
-	> SP01			- Administer print spools
-	> PFCG			- Role Maintenance (PFCG) can be used to create role and user like SU01
-	> SU01         	 	- Maintain users, Security Administration transactions (create/delete/lock/unlock user account, change password etc.)
-	> SU02     		- Allocate authorizations to a profile. Maintain SAP Authorization Profiles.     
+> SE15				– Data Dictionary
+> ST04				- Database performance monitor (allow to send SQL request to the database)
+> SM32				– Updates Table USR40 with invalid passwords
+> SM3 				– Displays and deletes processing job logs
+> SM36/SM37			– Schedule Background Job 
+> SM49				– Execute external operating system commands
+> SM52				– Execute operating system commands
+> SM59				– Maintain Remote Function Calls destination definitions
+> SM69				– Maintain external commands
+> SP01				- Administer print spools
+> PFCG				- Role Maintenance (PFCG) can be used to create role and user like SU01
+> SU01         	 		- Maintain users, Security Administration transactions (create/delete/lock/unlock user account, change password etc.)
+> SU02     			- Allocate authorizations to a profile. Maintain SAP Authorization Profiles.     
 				  The transaction code SU02 can be use to manually edit SAP profiles. 
 				  As notification from the initial screen, SAP has recommended to not use this transaction any longer
 				  for profile and user administration.
-	> SU10			- User MAss Maintenance (ex. Lock and Unlock user account, Change the password of a user?)
+> SU10				- User MAss Maintenance (ex. Lock and Unlock user account, Change the password of a user?)
 				- Delete/add a profile for all users
-	> SU03n
-	> SU03     		- Maintenance of Authorizations 
-	> SU53     		- Evaluate Authorization Check
-	> AL11			- Display all the SAP Directories and files stored on the underlying OS server 
-	> Program/report "RPCIFU01" 	- Display OS files
-	> Program/report "RPCIFU03" 	- Download OS files	
-	> Program/report "RSBDCOS0" 	- Execute OS commands
-	> CG3Z or GUI_upload and CG3Y or GUI_download  - Upload / download files to SAP systems (underlying OS server)
-	> SXDA, SXDB		- Data Transfer Workbench 
-    	> SXDA_TOOLS    	- DX Workbench: tools  
-	> SU56			- User Authorization Buffer
-	> SM01			- Can be used to block specific transactions and to list all transactions
-	> RSUDO 		- idem SUDO mais pour SAP
-	> RSRT 			- Query monitor
-	> SCMP 			- Table/View Comparaison
-	> SQVI			- Table Quickviewer
-	> SUIM			- select USER and then "specific transactions" to see the list of users having access to specifics transactions
+> SU03n
+> SU03     			- Maintenance of Authorizations 
+> SU53     			- Evaluate Authorization Check
+> AL11				- Display all the SAP Directories and files stored on the underlying OS server 
+> Program/report "RPCIFU01" 	- Display OS files
+> Program/report "RPCIFU03" 	- Download OS files	
+> Program/report "RSBDCOS0" 	- Execute OS commands
+> CG3Z or GUI_upload and CG3Y or GUI_download  - Upload / download files to SAP systems (underlying OS server)
+> SXDA, SXDB			- Data Transfer Workbench 
+> SXDA_TOOLS    		- DX Workbench: tools  
+> SU56				- User Authorization Buffer
+> SM01				- Can be used to block specific transactions and to list all transactions
+> RSUDO 			- idem SUDO mais pour SAP
+> RSRT 				- Query monitor
+> SCMP 				- Table/View Comparaison
+> SQVI				- Table Quickviewer
+> SUIM				- select USER and then "specific transactions" to see the list of users having access to specifics transactions
 	
-	> OS04			- Local System Configuration
-	> OS05			- Remote System Configuration
-	> OS06			- Local Operating System Activity
-	> OS07			- Remote Operating System Activity
+> OS04				- Local System Configuration
+> OS05				- Remote System Configuration
+> OS06				- Local Operating System Activity
+> OS07				- Remote Operating System Activity
 
-	> SM13			- Administrate Update Records
-	> SM1			- Update Program Administration
-	> SM20			- Security Audit Log Assessment
-	> SM21			- Online System Log Analysis
+> SM13				- Administrate Update Records
+> SM1				- Update Program Administration
+> SM20				- Security Audit Log Assessment
+> SM21				- Online System Log Analysis
 	
-	> TU02			- Parameter changes
+> TU02				- Parameter changes
 	
-	> SE06			- Set Up Transport Organizer
-	> STMS			- Transport Management System
-	> SCC4			- (customize it to ztcode) - Administrationdes mandants 
-
+> SE06				- Set Up Transport Organizer
+> STMS				- Transport Management System
+> SCC4				- (customize it to ztcode) - Administrationdes mandants 
+```
 
 Weak parameter transactions
 ————————————————————————————————————————————
