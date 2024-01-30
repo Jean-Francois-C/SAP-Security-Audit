@@ -183,8 +183,8 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
-#### Different Types of Users in SAP
-> There are five types of users in sap (useful link: https://www.stechies.com/type-of-users-in-sap/)
+#### Types of users in SAP
+> There are five types of users in SAP (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
 ———————————————— 
