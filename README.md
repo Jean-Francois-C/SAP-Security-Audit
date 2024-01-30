@@ -2,7 +2,7 @@
 
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
 
-### Index
+### Table of contents
 - [0. Useful tools](#0-Useful-tools)
 - [1. SAP security controls and configuration hardening review](#01-SAP-security-controls-and-configuration-hardening-review)
 - [2. How to get unauthorized access to SAP tables and data using SAP transactions](#02-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
