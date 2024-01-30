@@ -109,8 +109,8 @@ Parameters					Description
 > Notes: 
 The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
 Easy ways to see which users have security policies assigned to them:
-+ Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
-+ Option 2: Directly in table USR02 (field SECURITY_POLICY).
+Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
+Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
 #### Check that SAP default passwords have been changed 
 ```
