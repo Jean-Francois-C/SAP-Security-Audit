@@ -519,7 +519,8 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ------------------
 #### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
 
-> Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the passwords (depending your permissions)..
+#### Restrict access to the tables containing the local SAP password hashes
+> Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the password hashes (depending your permissions)..
 ```
 > SAP Quick Viewer : SQVI 
 > SAP Standard query : SQ01 
@@ -529,7 +530,7 @@ If there are any, this might become a finding that can easily avoid (… althoug
 > SCMP  (View / Table Comparison)
 ```	
 
-#### Check that SAP default passwords have been changed 
+#### Check that the SAP default passwords have been changed 
 > This can be done by testing manually the default logins and passwords or using a script.
 > This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
 ```
