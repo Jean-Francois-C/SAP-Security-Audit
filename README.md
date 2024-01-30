@@ -4,7 +4,7 @@ Training course materials and research notes that I created to teach how to perf
 
 ### Content
 ```
-- [01. [Audit] SAP security controls & Configuration Hardening Review](#-01--Audit-SAP-security-controls--Configuration-Hardening-Review)
+- [01. [Audit] SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions
 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
 04. [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
