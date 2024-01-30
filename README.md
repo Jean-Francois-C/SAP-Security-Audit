@@ -4,15 +4,15 @@ Training course materials and research notes that I created to teach how to perf
 
 ### Index
 - [0. Useful tools](#0-Useful-tools)
-- [1. SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
-- [2. How to get unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
-- [3. How to get remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer)
-- [4. ABAP Debugger enabled in production environment (SAP application layer)](#04-Audit--Pentest-ABAP-Debugger-enabled-in-production-environment-SAP-application-layer)
-- [5. Sensitive information disclosure from SAP Spool (SAP application layer)](#05-Audit--Pentest-Sensitive-information-disclosure-from-SAP-Spool-SAP-application-layer)
-- [6. Development kits and transactions (SAP application layer)](#06-Audit--Pentest-Development-kits-and-transactions--SAP-application-layer)
-- [7. Checking SAP User and Access Privileges Management (SAP application layer)](#07-Audit--Pentest-Weak-SAP-User-and-Access-Privileges-Management-SAP-application-layer)
-- [8. SAP Hana Database security configuration review (SAP database layer)](#08-Audit--Pentest-SAP-Hana-Database-security-configuration-review-SAP-database-layer)
-- [9. SAP penetration testing using NMAP and the Metasploit framework](#09-Pentest-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
+- [1. SAP security controls and configuration hardening review](#01-SAP-security-controls-and-configuration-hardening-review)
+- [2. How to get unauthorized access to SAP tables and data using SAP transactions](#02-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
+- [3. How to get remote OS commands execution using SAP transactions](#03-How-to-get-remote-OS-commands-execution-using-SAP-transactions)
+- [4. Risks of having the ABAP Debugger enabled in production environment](#04-Risks-of-having-the-ABAP-Debugger-enabled-in-production-environment)
+- [5. Sensitive information disclosure from SAP Spool](#05-Sensitive-information-disclosure-from-SAP-Spool)
+- [6. Development kits and transactions](#06-Development-kits-and-transactions)
+- [7. SAP User and Access Privileges Management](#07-User-and-Access-Privileges-Management)
+- [8. SAP Hana Database security configuration review](#08-SAP-Hana-Database-security-configuration-review)
+- [9. SAP penetration testing using NMAP and the Metasploit framework](#09-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
 ### 0. Useful tools
 ```
@@ -25,7 +25,7 @@ Training course materials and research notes that I created to teach how to perf
 ```
 
 --------
-### 01. [Audit] SAP security controls & Configuration Hardening Review
+### 01. SAP security controls and configuration hardening review
 
 <i/>SAP Security controls (CoBIT)</i>
 > Check that the following technical security controls are implemented.
@@ -224,7 +224,7 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ```
 
 ------------
-### 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions  (SAP application layer)
+### 02. How to get unauthorized access to SAP tables and data using SAP transactions
 
 <i/>Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.</i>
 ```
@@ -332,7 +332,7 @@ Tips for SAP passcode cracking:
 ```
 
 ------------
-### 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
+### 03. How to get remote OS commands execution using SAP transactions
 
 <i/>There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
 All the OS commands are executed by a local OS account « <SID>adm » which is used to manage the SAP software at the OS layer and which can log into the SAP database with high privileges.
@@ -443,7 +443,7 @@ Step 3: Finally use the AL11 transaction to check that the file has been deleted
 http://quelquepart.biz/article26/cure-de-rajeunissement-pour-al11
 ```
 ------------
-### 04. [Audit & Pentest] ABAP Debugger enabled in production environment  (SAP application layer)
+### 04. Risks of having the ABAP Debugger enabled in production environment
 
 > One of the major risks in SAP is its powerful debugging environment with the ability to stop each program and enter debugging mode while the program continues running (including the ability to change values at run time). 
 The debugger allows bypassing certain controls (like authorization checks) and changing the system return-code (SY-SUBRC) for authorizations checks from Failed (4) to Succeeded (0).
@@ -478,7 +478,7 @@ This could allow a hacker to either change an account number while running a pay
 ```
 
 ------------
-### 05. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
+### 05. Sensitive information disclosure from SAP Spool
 
 > One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
 Many times the spool request is not deleted from the spool (for a very long time), even after the content is printed. Clearly, this turns the SAP spool into an excellent source for hackers to find information about money transfer slips, monthly pay-slips, check printouts, purchase orders and more.
@@ -491,7 +491,7 @@ Furthermore, most users have access to the SAP spool (directly via T-Code SP01 o
 ```
 
 --------------
-### 06. [Audit & Pentest] Development kits and transactions…. (SAP application layer)
+### 06. Development kits and transactions
 ```
 SAP Developper/ABAP/Workbench
 —————————————————————————————
@@ -520,7 +520,7 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ```
 
 ------------------
-### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
+### 07. SAP User and Access Privilege Management
 
 <i/> Restrict access to the tables containing the local SAP password hashes </i>
 > Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the password hashes (depending your permissions)..
@@ -671,7 +671,7 @@ Sources:
 ```
 
 -------------------
-### 08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
+### 08. SAP Hana Database security configuration review
 
 <i/> List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs) </i>
 ```
@@ -731,7 +731,7 @@ Sources:
 ```
 
 -------------------
-### 09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
+### 09. SAP penetration testing using NMAP and the Metasploit framework
 
 <i/> SAP Discovery using NMAP (network port scanner - https://nmap.org) </i>
 ```
