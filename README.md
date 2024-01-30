@@ -27,7 +27,7 @@ Training course materials and research notes that I created to teach how to perf
 --------
 ### 01. [Audit] SAP security controls & Configuration Hardening Review
 
-#### SAP Security controls (CoBIT)
+<i/>SAP Security controls (CoBIT)</i>
 > Check that the following technical security controls are implemented.
 ```
 - The superuser "SAP*" is properly secured
@@ -53,7 +53,7 @@ Training course materials and research notes that I created to teach how to perf
 - Remote access by software vendors is controlled adequately
 ```
 
-#### Review the security level of the SAP Architecture/Infrastructure
+<i/> Review the security level of the SAP Architecture/Infrastructure</i>
 > Check that the technology infrastructure is configured to secure communications and operations in the SAP ERP environment.
 ```
 > Firewall
@@ -66,16 +66,19 @@ Training course materials and research notes that I created to teach how to perf
 > …
 ```
 
-#### Check the security policy settings (password policy, network encryption, ..)
+<i/> Check the security policy settings (password policy, network encryption, ..)</i>
 > Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
 > Login / password_Expiration			- Frequency of forced password change (default = 0 = off)
 > Login / min_password				- Minimum password length (default = 3)
 > Login / fails_to_user_lock			- Number of invalid password attempts before user is locked (default = 12)
-> Login / failed_user_auto_unlock		- If user account is locked is it permanently locked until released by administrator or automatically unlocked at midnight (default = 1 = unlocked at midnight)
+> Login / failed_user_auto_unlock		- If user account is locked is it permanently locked until released by administrator
+						  or automatically unlocked at midnight (default = 1 = unlocked at midnight)
 > Rdisp / gui_auto_logout			- User is logged off of SAP after a period of inactivity (default = 7200 seconds = 2 hours)
 > Login / disable_multi_gui_login		- (default = 0 = multiple logons permitted)
-NOTE: if multi-login is disabled some users can still be permitted multiple logins via the “login/multi_login_users” setting where user-ids can be listed which can be permitted to logon multiple times
+
+NOTE: if multi-login is disabled some users can still be permitted multiple logins via the “login/multi_login_users” setting where user-ids
+      can be listed which can be permitted to logon multiple times
 
 Parameters					Description
 ————————————————————————————————————————————————————————————————————————————————————————————————
@@ -112,7 +115,7 @@ Easy ways to see which users have security policies assigned to them:
 Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
-#### Check that SAP default passwords have been changed 
+<i/> Check that SAP default passwords have been changed </i>
 ```
 List of default SAP credentials:
 
@@ -137,7 +140,7 @@ Notes:
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
 ```
 
-#### Review the SAP Gateway Security Files (SECINFO and REGINFO)
+<i/> Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
 ```
 > The "secinfo" security file is used to prevent unauthorized launching of external programs.
 > The file "reginfo" controls the registration of external programs in the gateway. 
@@ -168,7 +171,7 @@ P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
 P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 ```
 
-#### SAP logging strategies / Audit trails
+<i/> SAP logging strategies / Audit trails</i>
 ```
 Tracing a Transaction
 —————————————————————
@@ -183,7 +186,7 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
-#### Types of users in SAP
+<i/> Types of users in SAP</i>
 > There are five types of users in SAP (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
@@ -223,7 +226,7 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ------------
 ### 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions  (SAP application layer)
 
-> Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.
+<i/>Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.</i>
 ```
 There are multiple ways to display & edit tables in SAP
 —————————————————————————————————————————————————————————
@@ -275,7 +278,7 @@ Example of tables containing sensitive data
    > TIBAN - IBAN (International Bank Account Number) 
 ```
 
-#### SAP privilege escalation technique 1
+<i/> SAP privilege escalation technique 1 </i>
 > Dump SAP password hashes from the table USR02 or the view VUSR02_PWD and crack them with « John The Ripper » 
 ```
 + Read privilege over the table USR02 or the view VUSR02_PWD  (using SE16/SE16n, SM30, SQVI…) can allow a malevolent person to collect the password hashes of the SAP local accounts and then try to crack the passwords of SAP privileged accounts using « John The Ripper ».
@@ -291,7 +294,7 @@ Tips for SAP passcode cracking:
    > John --session=1 --format=sapg --wordlist=rockyou.txt  <File-containg-password-hashes>
 ```
 
-#### SAP privilege escalation technique 2
+<i/> SAP privilege escalation technique 2 </i>
 > Edit sensitive tables (e.g. USR02, USR04, USR10, USR11,…) using ST04 or SM30 or SM31
 ```
 + Edit privilege over the users, authorizations and profiles tables could allow a malevolent person to escalate its privileges via multiple ways.
@@ -309,7 +312,7 @@ Tips for SAP passcode cracking:
    > "sap_edit"
 ```
 
-#### Defense tips & Recommendations
+<i/> Defense tips & Recommendations </i>
 ```
 + Prevent users from being granted sensitive authorizations unless they genuinely need it for performing business tasks. 
    Users should be assigned only the minimum number of Authorizations required to perform their duties.
@@ -331,9 +334,9 @@ Tips for SAP passcode cracking:
 ------------
 ### 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
 
-> There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
+<i/>There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
 All the OS commands are executed by a local OS account « <SID>adm » which is used to manage the SAP software at the OS layer and which can log into the SAP database with high privileges.
-If a malevolent person can execute any commands on the server(s) hosting a SAP application/instance with the « <SID>adm » account, then he/she can take over the entire SAP ERP application and data (OS => Database => Application).
+If a malevolent person can execute any commands on the server(s) hosting a SAP application/instance with the « <SID>adm » account, then he/she can take over the entire SAP ERP application and data (OS => Database => Application). </i>
 
 ```
 [Privesc technique 1]
@@ -403,7 +406,7 @@ Upload a backdoor on the server hosting the SAP application/instance using the t
 Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
 ```
 
-#### SAP privilege escalation attack using remote OS commands
+<i/> SAP privilege escalation attack using remote OS commands </i>
 > Using one or several of the methods described above perform the following attack:
 ```
 + Step 1. Get an interactive session on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database with the « <SID>adm » account.
@@ -420,7 +423,7 @@ Execute any OS commands on the server hosting the SAP database using the transac
 + Step 3.bis  Edit SAP tables to add a new SAP user with SAP_ALL privileges and then use this new account to commit fraud.
 ```
 
-#### Other / Notes
+<i/> Other / Notes <i/>
 ```
 RSRFCCHECK
 ——————————
@@ -447,7 +450,7 @@ The debugger allows bypassing certain controls (like authorization checks) and c
 This could allow a hacker to either change an account number while running a payment program or change a report selection value or change the password of SAP privileged account.
 
 
-#### SAP privilege escalation attack - Bypass security controls with the ABAP Debugger
+<i/> SAP privilege escalation attack - Bypass security controls with the ABAP Debugger </i>
 ```
 + If the ABAP Debugger is enabled in production, a malevolent person having read-only access to SAP tables with transactions such as SE16 or SE16n could bypass controls (authorizations checks) and modify data to perform a privilege escalation attack and/or a financial fraud. 
    > How-to: 
@@ -459,7 +462,7 @@ This could allow a hacker to either change an account number while running a pay
       https://blogs.sap.com/2013/09/06/abap-tip-and-trick-to-break-tcode-access-to-not-so-authorized-tcodes/
 ```
 
-#### Defense tips & Recommendations
+<i/> Defense tips & Recommendations </i>
 ```
 + Remove debugging authorizations from all users while granting privileged access to users that really have to enter the debugging environment.
 
@@ -475,13 +478,13 @@ This could allow a hacker to either change an account number while running a pay
 ```
 
 ------------
-#### 05. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
+### 05. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)
 
 > One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
 Many times the spool request is not deleted from the spool (for a very long time), even after the content is printed. Clearly, this turns the SAP spool into an excellent source for hackers to find information about money transfer slips, monthly pay-slips, check printouts, purchase orders and more.
 Furthermore, most users have access to the SAP spool (directly via T-Code SP01 or indirectly via T-Code SM37), and most organizations enable unlimited access to the spool items, including the options to view, download and re-print the content.
 
-#### Defense tips & Recommendations
+<i/> Defense tips & Recommendations </i>
 ```
 + Inspect which users access SAP spool items, especially those that were not created by them.
 + Define sensitive spool items by criteria and alert when they are accessed.
@@ -517,9 +520,9 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ```
 
 ------------------
-#### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
+### 07. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)
 
-#### Restrict access to the tables containing the local SAP password hashes
+<i/> Restrict access to the tables containing the local SAP password hashes </i>
 > Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the password hashes (depending your permissions)..
 ```
 > SAP Quick Viewer : SQVI 
@@ -530,7 +533,7 @@ If there are any, this might become a finding that can easily avoid (… althoug
 > SCMP  (View / Table Comparison)
 ```	
 
-#### Check that the SAP default passwords have been changed 
+<i/> Check that the SAP default passwords have been changed </i>
 > This can be done by testing manually the default logins and passwords or using a script.
 > This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
 ```
@@ -580,7 +583,7 @@ Notes:
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
 ```
 
-#### Standard Security Reports to run (RSUSR via AID, SA38, or SUIM)
+<i/> Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
 ```
 > RSUSR003 – Check passwords for SAP* and DDIC 
 > RSUSR006 – locked users / unsuccessful login attempts
@@ -588,7 +591,7 @@ Notes:
 > RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
 ```
 
-#### List of powerful SAP transactions
+<i/> List of powerful SAP transactions </i>
 ```
 > DBxx  			– Database related transactions
 > SCC4, SCC5 			- Client administration
@@ -601,7 +604,8 @@ Notes:
 > SM30, SM31			– Table Maintenance (can be used to display and update table data)
 > SE11, SE12, SE13, SE14 	- Table structure maintenance
 > SE14				- The database utility is the interface between the ABAP Dictionary and the relational database underlying the R/3 System.
-				  It allows you to edit (create, delete and adjust to changes to their definition in the ABAP Dictionary) database objects derived from objects of the ABAP Dictionary.
+				  It allows you to edit (create, delete and adjust to changes to their definition in the ABAP Dictionary) database objects
+				  derived from objects of the ABAP Dictionary.
 > SE15				– Data Dictionary
 > ST04				- Database performance monitor (allow to send SQL request to the database)
 > SM32				– Updates Table USR40 with invalid passwords
@@ -655,7 +659,7 @@ Notes:
 > SCC4				- (customize it to ztcode) - Administrationdes mandants 
 ```
 
-#### Weak parameter transactions
+<i/> Weak parameter transactions </i>
 ```
 Parameter transactions execute an existing transaction delivering pre-defined screen input.
 To determine all unsafe parameter transactions for SE16, SM30… you need to search for PARAMs matching "/N<TCD>" (e.g. "/NSM30*") in the table TSTCP.
@@ -669,7 +673,7 @@ Sources:
 -------------------
 ### 08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
 
-#### List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs)
+<i/> List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs) </i>
 ```
 'SELECT * FROM SYS.USERS LIMIT 500'
 'SELECT * FROM SYS.USERS_PARAMETERS LIMIT 500'
@@ -690,13 +694,14 @@ Sources:
 'SELECT * FROM usr02;'
 ```
 
-#### How to log into the database to extract the configuration
+<i/> How to log into the database to extract the configuration </i>
 ```
 > [Option 1] The SAP HANA configuration can be collected using a “SAP Basis” account with the ‘ST04’ and ‘DBxx’ transactions
 
 > [Option 2] Use SAP HANA HDBSQL to execute SQL commands at OS level.
 
-	+ HDBSQL is a command line tool for executing commands on SAP HANA databases. SAP HANA HDBSQL is also used to automate the HANA Database backups using cron scripts. 
+	+ HDBSQL is a command line tool for executing commands on SAP HANA databases.
+          SAP HANA HDBSQL is also used to automate the HANA Database backups using cron scripts. 
 	+ Requirement: You want to access SQL prompt using HDBSQL at OS level. 
 	+ Prerequisites : You need password of <SID>ADM user and User with HANA database access, in our example we are connecting using SYSTEM.
 	+ Steps :
@@ -722,16 +727,15 @@ Sources:
 	Note:
 	"A user administrator can exclude users from this password check with the following SQL statement: ALTER USER <user_name> DISABLE PASSWORD LIFETIME.
 	 However, this is recommended only for technical users only, not database users that correspond to real people.
-	 A user administrator can re-enable the password lifetime check for a user with the following SQL statement: ALTER USER <user_name> ENABLE PASSWORD LIFETIME."
+	 A user administrator can re-enable the password lifetime check for a user with the following SQL statement: ALTER USER <user_name> ENABLE PASSWORD LIFETIME"
 ```
 
 -------------------
 ### 09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
 
-#### SAP Discovery using NMAP (network port scanner - https://nmap.org)
+<i/> SAP Discovery using NMAP (network port scanner - https://nmap.org) </i>
 ```
 > root@kali-linux$ nmap -sS -sV -v -p- 10.13.34.12
-
 	<SNIP>
 	Nmap scan report for 10.13.34.12
 	<SNIP>
@@ -794,7 +798,7 @@ Sources:
 	|_      https://help.sap.com/saphelp_nw73ehp1/helpdata/en/4a/5c004250995a6ae10000000a42189b/frameset.htm
 ```
 
-#### SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan)
+<i/> SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan) </i>
 ```
 => https://github.com/gelim/nmap-erpscan/blob/master/sap_ports.py
 
@@ -819,7 +823,7 @@ Sources:
 	Service Info: Host: java745
  ```
 
-#### SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com)
+<i/> SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com) </i>
 ```
 Module to perform network scans against SAP platforms, which can be found under modules/ auxiliary/scanner/sap/sap_service_discovery.rb: 
 msf  > use auxiliary/scanner/sap/sap_service_discovery.
@@ -827,7 +831,7 @@ msf  > set RHOST 192.168.1.149
 msf  > exploit
 ```
 
-#### SAP Router
+<i/> SAP Router </i>
 ```
 Module to launch a port scanner through an SAProuter. 
 The module is available on modules/auxiliary/scanner/sap/sap_router_portscanner.rb and allows two types of working modes: 
@@ -843,10 +847,11 @@ msf > use auxiliary/scanner/sap/sap_icm_urlscan
 msf auxiliary(sap_icm_urlscan) > show options
 ```
 
-#### Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution)
+<i/> Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution) </i>
 ```
 When enabled, this service allows remote execution of ABAP programs and functions via HTTP SOAP requests. 
-This RFC calling mechanism is protected by HTTP Basic headers (valid SAP credentials are needed), and communications encryption is provided only when HTTPS is enabled. 
+This RFC calling mechanism is protected by HTTP Basic headers (valid SAP credentials are needed), and communications encryption is provided
+only when HTTPS is enabled. 
 
 Module 	Description 
 auxiliary/scanner/sap/sap_soap_ rfc_brute_login.rb 	
@@ -854,14 +859,15 @@ auxiliary/scanner/sap/sap_soap_ rfc_brute_login.rb
   Basic HTTP authentication is used for brute forcing. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_system_info.rb 	
-> Attempts to use the RFC_SYSTEM_INFO function to obtain different information about the remote system such as operating system, hostname, IP addresses, time zone, etc.
-  Valid SAP credentials are required. 
+> Attempts to use the RFC_SYSTEM_INFO function to obtain different information about the remote system such as operating system, hostname,
+  IP addresses, time zone, etc. Valid SAP credentials are required. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_ping.rb 	
 > Attempts to use the RFC_PING function to test connectivity with the remote endpoint. Valid SAP credentials are required. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_eps_get_directory_listing.rb 	
-> Attempts to use the EPS_GET_DIRECTORY_LISTING function to disclose if a remote directory exists ( le system level) and the number of entries into it. Valid SAP credentials are required. This module also can be used to launch an SMB Relay Attack. 
+> Attempts to use the EPS_GET_DIRECTORY_LISTING function to disclose if a remote directory exists ( le system level) and the number of entries
+  into it. Valid SAP credentials are required. This module also can be used to launch an SMB Relay Attack. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_p _check_os_file_existence.rb 	
 > Attempts to use the PFL_CHECK_OS_FILE_EXISTENCE function to check if a le exists in the remote le system.
@@ -872,11 +878,11 @@ auxiliary/scanner/sap/sap_soap_ th_saprel_disclosure.rb
   Valid SAP credentials are required. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_read_table.rb 	
-> Attempts to use the TH_SAPREL function to disclose information about the remote SAP system such as OS kernel version, database version, or SAP version and patch level.
-  Valid SAP credentials are required. 
+> Attempts to use the TH_SAPREL function to disclose information about the remote SAP system such as OS kernel version, database version,
+  or SAP version and patch level. Valid SAP credentials are required. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_rzl_read_dir.rb
-> Attempts to use the RZL_READ_DIR_LOCAL function to enumerate directory contents on the remote le system.
+> Attempts to use the RZL_READ_DIR_LOCAL function to enumerate directory contents on the remote system.
   Valid SAP credentials are required. This module also can be used to launch an SMB Relay Attack. 
 
 auxiliary/scanner/sap/sap_soap_ rfc_susr_rfc_user_interface.rb 	
@@ -912,19 +918,20 @@ exploits/multi/sap/sap_soap_rfc_ sxpg_command_exec.rb
   Valid SAP credentials are required. 
 ```
 
-#### SMB Relay attacks using Metasploit
+<i/> SMB Relay attacks using Metasploit </i>
 ```
 There is also an interesting attack that can target different SAP functions and is reachable via the SOAP RFC or other components
 such as those in the J2EE engine—more about that later. 
 While handling names, a lot of functions are vulnerable to SMB Relay Attacks. 
-These attacks send an UNC path pointing to a server capturing SMB hashes, which can be disclosed when the vulnerable component tries to access it. 
+These attacks send an UNC path pointing to a server capturing SMB hashes, which can be disclosed when the vulnerable component
+tries to access it. 
 
 > Some SMB Relay Attack attacks, both unauthenticated and authenticated, have been collected by @nmonkee in an auxiliary module located
   at /auxiliary/scanner/sap/sap_smb_relay.rb. 
 > Module to run to capture the SMB Hashs (LMhash and NTHash): auxiliary/server/capture/smb module capturing SMB hashes 
 ```
 
-#### SAP Web interface password brute-force using Metasploit
+<i/> SAP Web interface password brute-force using Metasploit </i>
 ```
 Launch brute force attacks against the Web GUI with the module : auxiliary/scanner/sap/sap_web_gui_brute_login.rb
 
@@ -945,7 +952,7 @@ msf auxiliary(sap_web_gui_brute_login) > run
 msf auxiliary(sap_web_gui_brute_login)
 ```
 
-#### SAP Portal - J2EE engine exploits
+<i/> SAP Portal - J2EE engine exploits </i>
 ```
 Alexander Polyakov and Dmitry Chastuhin presented work on the J2EE engine (SAPocalypse NOW: Crushing SAP’s J2EE Engine and Breaking SAP Portal). 
 Attacks from the above presentations have been published as Metasploit modules: 
@@ -955,7 +962,7 @@ Attacks from the above presentations have been published as Metasploit modules:
    > The module can be found at modules/exploits/windows/http/sap_con gservlet_exec_no_auth.rb.  
 ```
 
-#### Attacking the SAP Management Console with Metasploit 
+<i/> Attacking the SAP Management Console with Metasploit </i>
 ```
 Attack of the SAP MC SOAP interface to retrieve a lot of interesting information about an SAP system :
 
@@ -1000,7 +1007,7 @@ modules/exploits/windows/http/sap_mgmt_con_osexec_ payload.rb
  SAP Management Console credentials are required. 
 ```
 
-#### Exploiting SAPHostControl with Metasploit 
+<i/> Exploiting SAPHostControl with Metasploit </i>
 ```
 The component that provides the SOAP endpoint for the SAP Management Console on the TCP/50013 for the default instance is startsrv. 
 
@@ -1010,7 +1017,8 @@ The interesting thing about this sapstartsrv component is that it’s also liste
 The GetDatabaseStatus call was attacked by Michael Jordon in order to get an arbitrary code execution from a command injection.
 The exploit for this attack is also available on Metasploit as modules/exploits/windows/http/sap_host_control_cmd_ exec.rb.
 
-It’s worth mentioning that the injection technique inspired @nmonkee when writing the OS command injections for the SXPG_CALL_SYSTEM_SXPG_CALL_ SYSTEM and SXPG_COMMAND_EXECUTE RFC SOAP calls
+It’s worth mentioning that the injection technique inspired @nmonkee when writing the OS command injections for the "SXPG_CALL_SYSTEM_SXPG_CALL_SYSTEM"
+ and "SXPG_COMMAND_EXECUTE" RFC SOAP calls
 (remember also to check his post for more information about these command injections). 
 The GetComputerSystem call was abused by Bruno Morisson to retrieve information related to the remote host without any authentication.
 The exploit for this attack is available on modules/auxiliary/scanner/sap/sap_hostctrl_getcomputersystem.rb.
@@ -1027,7 +1035,7 @@ verbose => true
 msf auxiliary(sap_hostctrl_getcomputersystem) > run
 ```	
 
-#### SAP NetWeaver Dispatcher
+<i/> SAP NetWeaver Dispatcher </i>
 ```
 The disp+work.exe process is vulnerable to a buffer over ow (CVE-2012-2611) while handling Traces, which can be exploited with metasploit Module modules/exploits/windows/misc/sap_netweaver_dispatcher.rb: 
 msf  exploit(sap_netweaver_dispatcher) > use exploit/windows/misc/sap_netweaver_dispatcher
