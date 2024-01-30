@@ -331,51 +331,50 @@ Tips for SAP passcode cracking:
 ------------
 ### 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
 
-There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
+> There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
 All the OS commands are executed by a local OS account « <SID>adm » which is used to manage the SAP software at the OS layer and which can log into the SAP database with high privileges.
 If a malevolent person can execute any commands on the server(s) hosting a SAP application/instance with the « <SID>adm » account, then he/she can take over the entire SAP ERP application and data (OS => Database => Application).
 
 ```
-[Technique 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
-   > Go to transaction SA38 (Execute ABAP program/report)
-   > Run the report "RSBDCOS0"
-   > Execute any OS commands 
-	> write and run a reverse shell, 
-	> add a SSH public key and login to the Linux server, 
-	> identify OS or database clear-text passwords stored in config files, scripts or .bash_history
+[Privesc Technique 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
+> Go to transaction SA38 (Execute ABAP program/report)
+> Run the report "RSBDCOS0"
+> Execute any OS commands 
+  - write and run a reverse shell, 
+  - add a SSH public key and login to the Linux server, 
+  - identify OS or database clear-text passwords stored in config files, scripts or .bash_history
  
-   + Defense tips: Disable the CALL ‘SYSTEM’ command setting the profile parameter ‘rdisp/call_system’ to ‘0’.
++ Defense tips: Disable the CALL ‘SYSTEM’ command setting the profile parameter ‘rdisp/call_system’ to ‘0’.
 ```
 ```
 [Technique 2] Execute any OS commands on the server hosting the SAP application/instance using the transactions « SM69 + SM49 » or « SM69 + SM36 » or « SM69 + SM37 » 
-   > Go to SM69 (Maintain external OS commands)
-   > Then create a new external command or edit an existing one
-   > Then set and save the OS command that you want to run
-   > Finally execute it using either:
-       SM49 (Execute external OS commands)
-       or 
-       SM36  (Simple job selection/scheduler) 
-       or 
-       SM37 (Extended job selection/scheduler)
+> Go to SM69 (Maintain external OS commands)
+> Then create a new external command or edit an existing one
+> Then set and save the OS command that you want to run
+> Finally execute it using either:
+  - SM49 (Execute external OS commands)
+  or 
+  - SM36  (Simple job selection/scheduler) 
+  or 
+  - SM37 (Extended job selection/scheduler)
 
-    + Useful links: https://blogs.sap.com/2013/10/29/secure-execution-of-os-commands-by-abap-programs/
++ Useful links: https://blogs.sap.com/2013/10/29/secure-execution-of-os-commands-by-abap-programs/
 ```
 ```
 [Technique 3] Execute pre-defined/limited OS commands on the server hosting the SAP application/instance using the transactions SM49 or SM36 or SM37 
-   Note: 
-   In some cases by using the transactions CG3Z (File upload), CG3Y (File upload) and AL11 (SAP OS Directory and file browser) in addition to either SM49 or SM36 or SM37 it is possible to execute any OS commands.
-   For example, if one of the pre-defined or customized OS commands available is to execute a script or a binary, then the following attack scenario is possible:
-   > Go to CG3Y (File download)
-   > Then select and download the script (or binary) that you are allow to execute
-   > Go to CG3Z (File upload)
-   > Select and upload/overwrite a malicious script (or binary) on the Windows/Linux server supporting the SAP application/instance 
-   > Then execute it using either:
-       SM49  (Execute external OS commands)
-       or 
-       SM36  (Simple job selection/scheduler) 
-       or 
-       SM37  (Extended job selection/scheduler)
-   > Finally use CG3Z to replace your malicious script (or binary) by the legitimate one.
+Note: In some cases by using the transactions CG3Z (File upload), CG3Y (File upload) and AL11 (SAP OS Directory and file browser) in addition to either SM49 or SM36 or SM37 it is possible to execute any OS commands.
+For example, if one of the pre-defined or customized OS commands available is to execute a script or a binary, then the following attack scenario is possible:
+> Go to CG3Y (File download)
+> Then select and download the script (or binary) that you are allow to execute
+> Go to CG3Z (File upload)
+> Select and upload/overwrite a malicious script (or binary) on the Windows/Linux server supporting the SAP application/instance 
+> Then execute it using either:
+  - SM49  (Execute external OS commands)
+  or 
+  - SM36  (Simple job selection/scheduler) 
+  or 
+  - SM37  (Extended job selection/scheduler)
+> Finally use CG3Z to replace your malicious script (or binary) by the legitimate one.
 ```
 ```
 [Technique 4] Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
