@@ -10,7 +10,7 @@ Training course materials and research notes that I created to teach how to perf
 - [4. Risks of having the ABAP Debugger enabled in production environment](#04-Risks-of-having-the-ABAP-Debugger-enabled-in-production-environment)
 - [5. Sensitive information disclosure from SAP Spool](#05-Sensitive-information-disclosure-from-SAP-Spool)
 - [6. Development kits and transactions](#06-Development-kits-and-transactions)
-- [7. SAP User and Access Privileges Management](#07-User-and-Access-Privileges-Management)
+- [7. SAP User and Access Privilege Management](#07-User-and-Access-Privilege-Management)
 - [8. SAP Hana Database security configuration review](#08-SAP-Hana-Database-security-configuration-review)
 - [9. SAP penetration testing using NMAP and the Metasploit framework](#09-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
