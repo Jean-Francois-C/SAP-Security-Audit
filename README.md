@@ -10,7 +10,7 @@ Training course materials and research notes that I created to teach how to perf
 - [4. Risks of having the ABAP Debugger enabled in production environment](#04-Risks-of-having-the-ABAP-Debugger-enabled-in-production-environment)
 - [5. Sensitive information disclosure from SAP Spool](#05-Sensitive-information-disclosure-from-SAP-Spool)
 - [6. Development kits and transactions](#06-Development-kits-and-transactions)
-- [7. SAP user and access privilege management](#07-SAP-User-and-Access-Privilege-Management)
+- [7. SAP user and access management](#07-SAP-User-and-Access-Management)
 - [8. SAP Hana database security configuration review](#08-SAP-Hana-Database-security-configuration-review)
 - [9. SAP penetration testing using NMAP and the Metasploit framework](#09-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
@@ -115,22 +115,47 @@ Easy ways to see which users have security policies assigned to them:
 Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
-<i/> Check that SAP default passwords have been changed </i>
+<i/> Check that the SAP default passwords have been changed </i>
+> This can be done by testing manually the default logins and passwords or using a script.
+> This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
 ```
-List of default SAP credentials:
++ List of default SAP accounts and passwords
+  
+  Login		Password		Clients/Mandants
+  ————————————————————————————————————————————————————————————
+  SAP* 		PASS or 06071992   	000, 001, 066  
+  DDIC 		19920706		000, 001
+  TSMADM 	PASSWORD		000, 001
+  EARLYWATCH 	SUPPORT			066
+  SAPCPIC 	ADMIN   		000, 001
+  SAPR3 	SAP 			(SAP Local Database)
 
-  Login		    Password		        Clients/Mandants
-  ————————————————————————————————————————————————————————————————
-  SAP* 		    PASS or 06071992   		000, 001, 066  
-  DDIC 		    19920706		        000, 001
-  TSMADM 	    PASSWORD		        000, 001
-  EARLYWATCH        SUPPORT			066
-  SAPCPIC 	    ADMIN   		        000, 001
-  SAPR3             SAP 			(SAP Local Database)
+  RISK 				USER 				PASSWORD 				CLIENT/Mandants 	REMARK
+  ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  Very High 			SAP* 				06071992 / PASS 			001,066,etc… 		Hardcoded kernel user
+  Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
+  Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
+  High 				CTB_ADMIN 			sap123 					N.A. 			Java user
+  High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from 																USR02 table and sometimes OS execution
+  Medium 			 TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
+  Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in 																some cases for vulnerabilities where only 																authentication is needed
+																					
+  RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
+  ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+  HIGH 				SMD_ADMIN 			System 				init1234 				X
+  HIGH 				SMD_BI_RFC 			System 				init1234 				X
+  HIGH 				SMD_RFC 			System 				init1234 				X
+  HIGH 				SOLMAN_ADMIN 			Dialog 				init1234 				X
+  HIGH 				SOLMAN_BTC 			System 				init1234 				X
+  HIGH 				SAPSUPPORT 			Dialog 				init1234 				X 
+  HIGH 				SOLMAN<SID><CLNT> 		Dialog 				init1234 				X
+  MED/HIGH 			SMDAGENT_<SID> 			System 				init1234 				X 
+  MED 				CONTENTSERV 			System 				init1234 				X
+  MED 				SMD_AGT 			System 				init1234    
 ```
 ```
 SAP Password Hash Formats in table USR02
-————————————————————————————————————————
+—————————————————————————————————————————
 If the field "CODVN" = « G » then the password code versions/formats will be B & F
 If the field "CODVN" = « I » then the password code versions/formats will be B, F & H
 
@@ -138,6 +163,14 @@ Notes:
 + B = BCODE (MD5-based; Maximum pwd length=8, only upper case),
 + F = PASSCODE (SHA1-based; Maximum pwd length=40, case sensitive)
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
+```
+
+<i/> Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
+```
+> RSUSR003 – Check passwords for SAP* and DDIC 
+> RSUSR006 – locked users / unsuccessful login attempts
+> RSUSR200 - Users with original passwords, users not logged in for xx days, users who have not changed password in xx days
+> RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
 ```
 
 <i/> Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
@@ -520,10 +553,10 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ```
 
 ------------------
-### 07. SAP User and Access Privilege Management
+### 07. SAP User and Access Management
 
-<i/> Restrict access to the tables containing the local SAP password hashes </i>
-> Several SAP transactions can be used to access the table USR02 and/or the view VUSR02_PWD that contain the password hashes (depending of your permissions).
+<i/> Restrict access and permissions to the SAP transactions allowing to display the tables containing the SAP password hashes </i>
+> Several SAP transactions can be used to display the table USR02 and/or the view VUSR02_PWD that contain the local password hashes.
 ```
 > SAP Quick Viewer : SQVI 
 > SAP Standard query : SQ01 
@@ -533,65 +566,7 @@ If there are any, this might become a finding that can easily avoid (… althoug
 > SCMP  (View / Table Comparison)
 ```	
 
-<i/> Check that the SAP default passwords have been changed </i>
-> This can be done by testing manually the default logins and passwords or using a script.
-> This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
-```
-+ List of default SAP accounts and passwords
-  
-  Login		Password		Clients/Mandants
-  ————————————————————————————————————————————————————————————
-  SAP* 		PASS or 06071992   	000, 001, 066  
-  DDIC 		19920706		000, 001
-  TSMADM 	PASSWORD		000, 001
-  EARLYWATCH 	SUPPORT			066
-  SAPCPIC 	ADMIN   		000, 001
-  SAPR3 	SAP 			(SAP Local Database)
-
-  RISK 				USER 				PASSWORD 				CLIENT/Mandants 	REMARK
-  ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-  Very High 			SAP* 				06071992 / PASS 			001,066,etc… 		Hardcoded kernel user
-  Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
-  Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
-  High 				CTB_ADMIN 			sap123 					N.A. 			Java user
-  High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
-  Medium 			 TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
-  Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in some cases for vulnerabilities where only authentication is needed
-																					
-  RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
-  ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-  HIGH 				SMD_ADMIN 			System 				init1234 				X
-  HIGH 				SMD_BI_RFC 			System 				init1234 				X
-  HIGH 				SMD_RFC 			System 				init1234 				X
-  HIGH 				SOLMAN_ADMIN 			Dialog 				init1234 				X
-  HIGH 				SOLMAN_BTC 			System 				init1234 				X
-  HIGH 				SAPSUPPORT 			Dialog 				init1234 				X 
-  HIGH 				SOLMAN<SID><CLNT> 		Dialog 				init1234 				X
-  MED/HIGH 			SMDAGENT_<SID> 			System 				init1234 				X 
-  MED 				CONTENTSERV 			System 				init1234 				X
-  MED 				SMD_AGT 			System 				init1234    
-```
-```
-SAP Password Hash Formats in table USR02
-—————————————————————————————————————————
-If the field "CODVN" = « G » then the password code versions/formats will be B & F
-If the field "CODVN" = « I » then the password code versions/formats will be B, F & H
-
-Notes:
-+ B = BCODE (MD5-based; Maximum pwd length=8, only upper case),
-+ F = PASSCODE (SHA1-based; Maximum pwd length=40, case sensitive)
-+ H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
-```
-
-<i/> Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
-```
-> RSUSR003 – Check passwords for SAP* and DDIC 
-> RSUSR006 – locked users / unsuccessful login attempts
-> RSUSR200 - Users with original passwords, users not logged in for xx days, users who have not changed password in xx days
-> RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
-```
-
-<i/> List of powerful SAP transactions </i>
+<i/> Review who has access (and with which permissions) to the following list of powerful SAP transactions </i>
 ```
 > DBxx  			– Database related transactions
 > SCC4, SCC5 			- Client administration
