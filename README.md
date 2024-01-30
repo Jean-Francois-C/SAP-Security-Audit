@@ -25,10 +25,10 @@ Training course materials and research notes that I created to teach how to perf
 ```
 
 --------
-#### 01. [Audit] SAP security controls & Configuration Hardening Review
+### 01. [Audit] SAP security controls & Configuration Hardening Review
 
-##### SAP Security controls (CoBIT)
-> Note: The following list of security controls to check or perform are focus on the "technical" part and not on the "Business" part.
+#### SAP Security controls (CoBIT)
+> Check that the following technical security controls are implemented.
 ```
 - The superuser "SAP*" is properly secured
 - The default passwords for users "DDIC", "SAPCPIC" and "EarlyWatch" have been changed
@@ -53,7 +53,7 @@ Training course materials and research notes that I created to teach how to perf
 - Remote access by software vendors is controlled adequately
 ```
 
-##### Review the security level of the SAP Architecture/Infrastructure
+#### Review the security level of the SAP Architecture/Infrastructure
 > Check that the technology infrastructure is configured to secure communications and operations in the SAP ERP environment.
 ```
 > Firewall
@@ -66,8 +66,8 @@ Training course materials and research notes that I created to teach how to perf
 > …
 ```
 
-##### Security policy settings (password policy, network encryption, ..)
-> Collect and Review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
+#### Security policy settings (password policy, network encryption, ..)
+> Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
 > Login / password_Expiration			- Frequency of forced password change (default = 0 = off)
 > Login / min_password				- Minimum password length (default = 3)
@@ -112,7 +112,7 @@ Easy ways to see which users have security policies assigned to them:
 + Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 + Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
-##### Check that SAP default passwords have been changed 
+#### Check that SAP default passwords have been changed 
 ```
 List of default SAP credentials:
 
@@ -137,7 +137,7 @@ Notes:
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
 ```
 
-##### Review the SAP Gateway Security Files (SECINFO and REGINFO)
+#### Review the SAP Gateway Security Files (SECINFO and REGINFO)
 ```
 > The "secinfo" security file is used to prevent unauthorized launching of external programs.
 > The file "reginfo" controls the registration of external programs in the gateway. 
@@ -168,7 +168,7 @@ P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
 P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 ```
 
-##### SAP logging strategies / Audit trails
+#### SAP logging strategies / Audit trails
 ```
 Tracing a Transaction
 —————————————————————
@@ -183,7 +183,7 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
-##### Different Types of Users in SAP
+#### Different Types of Users in SAP
 > There are five types of users in sap (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
@@ -221,7 +221,7 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ```
 
 ------------
-#### 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions  (SAP application layer)
+### 02. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions  (SAP application layer)
 
 > Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.
 ```
@@ -275,8 +275,9 @@ Example of tables containing sensitive data
    > TIBAN - IBAN (International Bank Account Number) 
 ```
 
-SAP privilege escalation attack - Dump SAP password hashes from the table USR02 or the view VUSR02_PWD and crack them with « John The Ripper » 
-———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+#### SAP privilege escalation technique 1
+> Dump SAP password hashes from the table USR02 or the view VUSR02_PWD and crack them with « John The Ripper » 
+```
 + Read privilege over the table USR02 or the view VUSR02_PWD  (using SE16/SE16n, SM30, SQVI…) can allow a malevolent person to collect the password hashes of the SAP local accounts and then try to crack the passwords of SAP privileged accounts using « John The Ripper ».
 
 + Read privilege over the table USH02  (using SE16/SE16n, SM30, SQVI…) can allow a malevolent person to collect the old password hashes of SAP local accounts, then crack them using John The Ripper and try to guess the new one (based the old password pattern).
@@ -288,11 +289,12 @@ Tips for SAP passcode cracking:
    > SAP_ADM:SAP_ADM$55D85A52F82E02FE246E9E505F0D2C9BC82C9E14
 + Command to crack the passwords with « John The Ripper » : 
    > John --session=1 --format=sapg --wordlist=rockyou.txt  <File-containg-password-hashes>
+```
 
 
-
-SAP privilege escalation attack - Edit sensitive tables (e.g. USR02, USR04, USR10, USR11,…) using ST04 or SM30 or SM31
-————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+#### SAP privilege escalation technique 1
+> Edit sensitive tables (e.g. USR02, USR04, USR10, USR11,…) using ST04 or SM30 or SM31
+```
 + Edit privilege over the users, authorizations and profiles tables could allow a malevolent person to escalate its privileges via multiple ways.
    For examples:
    > Create a new SAP administrator account (SAP_ALL, SAP_New, SAP Basis profiles)
@@ -306,10 +308,10 @@ SAP privilege escalation attack - Edit sensitive tables (e.g. USR02, USR04, USR1
    > Object = S_TABU_DIS, (client independent tables also require S_TABU_CLI )
    > Activity = 01, 02
    > "sap_edit"
+```
 
-
-Defense tips & Recommendations
-————————————————————————————————
+#### Defense tips & Recommendations
+```
 + Prevent users from being granted sensitive authorizations unless they genuinely need it for performing business tasks. 
    Users should be assigned only the minimum number of Authorizations required to perform their duties.
     > Note: Removing SE16N from S_TCODE (for a particular table), but allowing for instance SA38 or START_REPORT does not necessarily prevent direct table access. 
@@ -325,19 +327,17 @@ Defense tips & Recommendations
    > TC = SE11, SE15, SE16, SE38, SE80
    > Object = S_DEVELOP
    > Activities = 01, 02, 06, 07 	
+```
 
-
-
-========================================================================================================================================================
-#### 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
-========================================================================================================================================================
+------------
+### 03. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)
 
 There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
 All the OS commands are executed by a local OS account « <SID>adm » which is used to manage the SAP software at the OS layer and which can log into the SAP database with high privileges.
 If a malevolent person can execute any commands on the server(s) hosting a SAP application/instance with the « <SID>adm » account, then he/she can take over the entire SAP ERP application and data (OS => Database => Application).
 
-
-+ [Method 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
+```
+[Technique 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
    > Go to transaction SA38 (Execute ABAP program/report)
    > Run the report "RSBDCOS0"
    > Execute any OS commands 
@@ -346,9 +346,9 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
 	> identify OS or database clear-text passwords stored in config files, scripts or .bash_history
  
    + Defense tips: Disable the CALL ‘SYSTEM’ command setting the profile parameter ‘rdisp/call_system’ to ‘0’.
-
-
-+ [Method 2] Execute any OS commands on the server hosting the SAP application/instance using the transactions « SM69 + SM49 » or « SM69 + SM36 » or « SM69 + SM37 » 
+```
+```
+[Technique 2] Execute any OS commands on the server hosting the SAP application/instance using the transactions « SM69 + SM49 » or « SM69 + SM36 » or « SM69 + SM37 » 
    > Go to SM69 (Maintain external OS commands)
    > Then create a new external command or edit an existing one
    > Then set and save the OS command that you want to run
@@ -360,9 +360,9 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
        SM37 (Extended job selection/scheduler)
 
     + Useful links: https://blogs.sap.com/2013/10/29/secure-execution-of-os-commands-by-abap-programs/
-
-
-+ Method 3] Execute pre-defined/limited OS commands on the server hosting the SAP application/instance using the transactions SM49 or SM36 or SM37 
+```
+```
+[Technique 3] Execute pre-defined/limited OS commands on the server hosting the SAP application/instance using the transactions SM49 or SM36 or SM37 
    Note: 
    In some cases by using the transactions CG3Z (File upload), CG3Y (File upload) and AL11 (SAP OS Directory and file browser) in addition to either SM49 or SM36 or SM37 it is possible to execute any OS commands.
    For example, if one of the pre-defined or customized OS commands available is to execute a script or a binary, then the following attack scenario is possible:
@@ -377,9 +377,9 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
        or 
        SM37  (Extended job selection/scheduler)
    > Finally use CG3Z to replace your malicious script (or binary) by the legitimate one.
-
-
-+ [Method 4] Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
+```
+```
+[Technique 4] Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
    > Go to SE38 (ABAP editor - create/edit/run ABAP program)
    > Create a new ABAP program (but you will need a developer key if you don't have a "developer" account)
    > Then execute it using either:
@@ -390,14 +390,14 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
        SM36  (Simple job selection/scheduler) 
        or 
        SM37 (Extended job selection/scheduler)
-
-
-+ [Method 5] Upload a backdoor on the server hosting the SAP application/instance using the transaction CG3Z (File upload)
+```
+```
+[Technique 5] Upload a backdoor on the server hosting the SAP application/instance using the transaction CG3Z (File upload)
    > Use CG3Z to overwrite a legitimate script (or binary) with a malicious one that will be more-likely executed later by a legitimate IT admin or a scheduled batch.
-
-
-+ [Method 6] Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
-
+```
+```
+[Technique 6] Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
+```
 
 SAP privilege escalation attack using remote OS commands
 ——————————————————————————————————————————————————————————
