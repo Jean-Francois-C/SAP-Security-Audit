@@ -3,7 +3,7 @@
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
 
 ### Index
-
+- [0. Useful tools](#Useful-tools)
 - [1. [Audit] SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
 - [2. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
 - [3. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer-)
@@ -14,7 +14,7 @@ Training course materials and research notes that I created to teach how to perf
 - [8. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)](#08-Audit--Pentest-SAP-Hana-Database-security-configuration-review-SAP-database-layer-)
 - [9. [Pentest] SAP penetration testing using NMAP and the Metasploit framework](#09-Pentest-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
-### Useful tools
+### 0. Useful tools
 ```
 ➤ SAPgui - GUI client for SAP ERP (https://community.sap.com/topics/gui)
 ➤ Database clients (e.g. HDBSQL, sql*plus)
@@ -186,7 +186,7 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
-<i/> Types of users in SAP</i>
+<i/> Types of users in SAP </i>
 > There are five types of users in SAP (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
@@ -423,7 +423,7 @@ Execute any OS commands on the server hosting the SAP database using the transac
 + Step 3.bis  Edit SAP tables to add a new SAP user with SAP_ALL privileges and then use this new account to commit fraud.
 ```
 
-<i/> Other / Notes <i/>
+<i/> Other / Notes </i>
 ```
 RSRFCCHECK
 ——————————
