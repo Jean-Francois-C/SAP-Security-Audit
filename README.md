@@ -5,14 +5,14 @@ Training course materials and research notes that I created to teach how to perf
 ### Index
 - [0. Useful tools](#0-Useful-tools)
 - [1. SAP security controls & Configuration Hardening Review](#01-Audit-SAP-security-controls--Configuration-Hardening-Review)
-- [2. [Audit & Pentest] Unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
-- [3. [Audit & Pentest] Remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer-)
-- [4. [Audit & Pentest] ABAP Debugger enabled in production environment (SAP application layer)](#04-Audit--Pentest-ABAP-Debugger-enabled-in-production-environment-SAP-application-layer-)
-- [5. [Audit & Pentest] Sensitive information disclosure from SAP Spool (SAP application layer)](#05-Audit--Pentest-Sensitive-information-disclosure-from-SAP-Spool-SAP-application-layer-)
-- [6. [Audit & Pentest] Development kits and transactions (SAP application layer)](#06-Audit--Pentest-Development-kits-and-transactions--SAP-application-layer-)
-- [7. [Audit & Pentest] Weak SAP User and Access/Privileges Management (SAP application layer)](#07-Audit--Pentest-Weak-SAP-User-and-Access-Privileges-Management-SAP-application-layer-)
-- [8. [Audit & Pentest] SAP Hana Database security configuration review (SAP database layer)](#08-Audit--Pentest-SAP-Hana-Database-security-configuration-review-SAP-database-layer-)
-- [9. [Pentest] SAP penetration testing using NMAP and the Metasploit framework](#09-Pentest-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
+- [2. Unauthorized access to SAP tables and data using SAP transactions](#02-Audit--Pentest-Unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
+- [3. Remote OS commands execution using SAP transactions (SAP application layer)](#03-Audit--Pentest-Remote-OS-commands-execution-using-SAP-transactions-SAP-application-layer-)
+- [4. ABAP Debugger enabled in production environment (SAP application layer)](#04-Audit--Pentest-ABAP-Debugger-enabled-in-production-environment-SAP-application-layer-)
+- [5. Sensitive information disclosure from SAP Spool (SAP application layer)](#05-Audit--Pentest-Sensitive-information-disclosure-from-SAP-Spool-SAP-application-layer-)
+- [6. Development kits and transactions (SAP application layer)](#06-Audit--Pentest-Development-kits-and-transactions--SAP-application-layer-)
+- [7. Weak SAP User and Access/Privileges Management (SAP application layer)](#07-Audit--Pentest-Weak-SAP-User-and-Access-Privileges-Management-SAP-application-layer-)
+- [8. SAP Hana Database security configuration review (SAP database layer)](#08-Audit--Pentest-SAP-Hana-Database-security-configuration-review-SAP-database-layer-)
+- [9. SAP penetration testing using NMAP and the Metasploit framework](#09-Pentest-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
 ### 0. Useful tools
 ```
