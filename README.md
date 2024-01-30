@@ -523,7 +523,7 @@ If there are any, this might become a finding that can easily avoid (… althoug
 ### 07. SAP User and Access Privilege Management
 
 <i/> Restrict access to the tables containing the local SAP password hashes </i>
-> Several SAP transactions can be used to access the table USR02 or the view VUSR02_PWD that contains the password hashes (depending your permissions)..
+> Several SAP transactions can be used to access the table USR02 and/or the view VUSR02_PWD that contain the password hashes (depending of your permissions).
 ```
 > SAP Quick Viewer : SQVI 
 > SAP Standard query : SQ01 
