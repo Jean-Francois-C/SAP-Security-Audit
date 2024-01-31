@@ -261,15 +261,18 @@ LOGS in SAP (programme RDDPRCHK)
 ```
 Dialog users (A)
 ———————————————— 
-A normal dialog user is used for all logon types by exactly one person. This is used to logon using SAP GUI. During a dialog logon, the system checks for expired/initial passwords.
-The user can change his or her own password. Multiple dialog logons are checked and, if appropriate, logged. These users are used for carrying out normal transactions. 
+A normal dialog user is used for all logon types by exactly one person. This is used to logon using SAP GUI.
+During a dialog logon, the system checks for expired/initial passwords.
+The user can change his or her own password. Multiple dialog logons are checked and, if appropriate, logged.
+These users are used for carrying out normal transactions. 
 This is an interactive type of logon. 
 The initial multiple logons are 6. 
 They are set according to companies policy.
 
 System Users (B)
 ————————————————
-These are non interactive users. They are used for background processing and internal communication in the system (such as RFC users for ALE, Workflow, TMS, and CUA). 
+These are non interactive users. They are used for background processing and internal communication in the
+system (such as RFC users for ALE, Workflow, TMS, and CUA). 
 Their passwords cannot be changed by the end users. Only the user administrator can change their passwords. 
 Multiple logon is permitted in these type of users. Dialog logon is not possible for these type of users.
 
@@ -351,16 +354,23 @@ Example of tables containing sensitive data
 <i/> SAP privilege escalation technique 1 </i>
 > Dump SAP password hashes from the table USR02 or the view VUSR02_PWD and crack them with « John The Ripper » 
 ```
-+ Read privilege over the table USR02 or the view VUSR02_PWD  (using SE16/SE16n, SM30, SQVI…) can allow a malevolent person to collect the password hashes of the SAP local accounts and then try to crack the passwords of SAP privileged accounts using « John The Ripper ».
++ Read privilege over the table USR02 or the view VUSR02_PWD  (using SE16/SE16n, SM30, SQVI…) can allow a
+  malevolent person to collect the password hashes of the SAP local accounts and then try to crack the passwords
+  of SAP privileged accounts using the tool « John The Ripper ».
 
-+ Read privilege over the table USH02  (using SE16/SE16n, SM30, SQVI…) can allow a malevolent person to collect the old password hashes of SAP local accounts, then crack them using John The Ripper and try to guess the new one (based the old password pattern).
++ Read privilege over the table USH02 (using for example SE16/SE16n, SM30, SQVI) can allow a malevolent person
+  to collect the old password hashes of SAP local accounts, then crack them using John The Ripper and try to guess
+  the new one (based on the old password pattern).
 
-Tips for SAP passcode cracking:
-+ SAP passcode (G format) collected in the USR02 table (for the SAP local account  « SAP_ADM ») : « 55D85A52F82E02FE246E9E505F0D2C9BC82C9E14 »
+Tips for SAP passcode cracking
+——————————————————————————————
++ SAP passcode (G format) collected in the USR02 table (for the SAP local account "SAP_ADM"): "55D85A52F82E02FE246E9E505F0D2C9BC82C9E14"
+
 + Password format to use with the tool « John The Ripper » : 
    > login:login$PASSCODE
    > SAP_ADM:SAP_ADM$55D85A52F82E02FE246E9E505F0D2C9BC82C9E14
-+ Command to crack the passwords with « John The Ripper » : 
+
++ Command to crack the SAP passwords with the tool « John The Ripper » : 
    > John --session=1 --format=sapg --wordlist=rockyou.txt  <File-containg-password-hashes>
 ```
 
