@@ -29,7 +29,7 @@ Useful tools for auditing SAP
 Useful resources regarding SAP security
 ———————————————————————————————————————
 ➤ SAP provides multiple security guides:
-  - Security Guide for SAP S/4HANA 2022 (dating from  2023-11-15)
+  - Security Guide for SAP S/4HANA 2022 (dating from 2023-11-15)
     ➤ https://help.sap.com/doc/d7c2c95f2ed2402c9efa2f58f7c233ec/2022/en-US/SEC_OP2022.pdf
   - Security Guide for SAP S/4HANA 2021 (dating from 2023-11-08)
     ➤ https://help.sap.com/doc/d7c2c95f2ed2402c9efa2f58f7c233ec/2021/en-US/SEC_OP2021.pdf
