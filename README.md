@@ -1,6 +1,6 @@
 ## SAP security audit and penetration testing
 
-Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
+Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP (hosted on-premises).
 
 ### Table of contents
 - [0. Useful tools and resources](#0-Useful-tools-and-resources)
