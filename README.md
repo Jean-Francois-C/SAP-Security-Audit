@@ -3,7 +3,7 @@
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP.
 
 ### Table of contents
-- [0. Useful tools](#0-Useful-tools)
+- [0. Useful tools and resources](#0-Useful-tools-and-resources)
 - [1. SAP security controls and configuration hardening review](#01-SAP-security-controls-and-configuration-hardening-review)
 - [2. How to get unauthorized access to SAP tables and data using SAP transactions](#02-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
 - [3. How to get remote OS commands execution using SAP transactions](#03-How-to-get-remote-OS-commands-execution-using-SAP-transactions)
@@ -14,14 +14,51 @@ Training course materials and research notes that I created to teach how to perf
 - [8. SAP Hana database security configuration review](#08-SAP-Hana-Database-security-configuration-review)
 - [9. SAP penetration testing using NMAP and the Metasploit framework](#09-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
-### 0. Useful tools
+### 0. Useful tools and resources
 ```
+Useful tools for auditing SAP
+—————————————————————————————
 ➤ SAPgui - GUI client for SAP ERP (https://community.sap.com/topics/gui)
 ➤ Database clients (e.g. HDBSQL, sql*plus)
 ➤ NMAP - Network port scanner (https://nmap.org)
 ➤ Metasploit penetration testing framework (https://www.metasploit.com) 
 ➤ 'John the Ripper' - Password cracker (https://www.openwall.com/john/)
 ➤ Various scripts (source:kali/Github/your owns)
+```
+```
+Useful resources regarding SAP security
+———————————————————————————————————————
+➤ SAP provides multiple security guides:
+  - Security Guide for SAP S/4HANA 2022 (dating from  2023-11-15)
+    ➤ https://help.sap.com/doc/d7c2c95f2ed2402c9efa2f58f7c233ec/2022/en-US/SEC_OP2022.pdf
+  - Security Guide for SAP S/4HANA 2021 (dating from 2023-11-08)
+    ➤ https://help.sap.com/doc/d7c2c95f2ed2402c9efa2f58f7c233ec/2021/en-US/SEC_OP2021.pdf
+  - SAP NetWeaver Security Guide
+    ➤ https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_FOR_SOH_740/621bb4e3951b4a8ca633ca7ed1c0aba2/4aaf6fd65e233893e10000000a42189c.html
+  - Protect Your SAP S/4HANA Cloud (Security Recommendations)
+    ➤ https://help.sap.com/docs/SAP_S4HANA_CLOUD/55a7cb346519450cb9e6d21c1ecd6ec1/52a1403b71464a8580bc2211b7ce0e32.html?locale=en-US
+  - SAP HANA Security (dating from 2021)
+    ➤ https://www.sap.com/documents/2016/06/3ea239ad-757c-0010-82c7-eda71af511fa.html
+  - Security Whitepapers
+    ➤ https://support.sap.com/en/security-whitepapers.html
+  - SAP Security Operations On Azure (Blog post)
+    ➤ https://community.sap.com/t5/enterprise-resource-planning-blogs-by-members/sap-security-operations-on-azure/ba-p/13403609
+  - SAP Help Portal (Documentation)
+    ➤ https://help.sap.com/docs/
+
+➤ Azure Cloud and SAP
+  - Security operations for SAP on Azure
+    ➤ https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/sap/sap-lza-security-operations
+  - Introduction to an SAP adoption scenario
+    ➤ https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/sap/
+
+➤ AWS Cloud and SAP
+  - How to migrate, implement, configure, and operate SAP solutions on AWS
+    ➤ https://docs.aws.amazon.com/sap/latest/sap-netweaver/sec-orc-sap-nw-lx.html
+    ➤ https://aws.amazon.com/fr/sap/docs/
+
+➤ Operating System Security Hardening Guide for SAP HANA for SUSE Linux Enterprise Server 
+  - https://documentation.suse.com/sbp/sap-15/html/OS_Security_Hardening_Guide_for_SAP_HANA_SLES15/index.html
 ```
 
 --------
