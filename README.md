@@ -3,7 +3,7 @@
 Training course materials and research notes that I created to teach how to perform a technical security audit and penetration test of SAP (hosted on-premises).
 
 ### Table of contents
-- [Intro - List of useful tools and resources](#Intro--List-of-useful-tools-and-resources)
+- [Intro - List of useful tools and resources](#Intro---List-of-useful-tools-and-resources)
 - Security Audit
 	- [1. SAP security controls and configuration hardening review](#1-SAP-security-controls-and-configuration-hardening-review)
 	- [2. SAP user and access management review](#2-SAP-User-and-Access-Management-Review)
