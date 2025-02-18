@@ -14,7 +14,7 @@ Training course materials and research notes that I created to teach how to perf
  - Penetration Test
 	- [1. How to get unauthorized access to SAP tables and data using SAP transactions](#1-How-to-get-unauthorized-access-to-SAP-tables-and-data-using-SAP-transactions)
 	- [2. How to get remote OS commands execution using SAP transactions](#2-How-to-get-remote-OS-commands-execution-using-SAP-transactions)
-	- [3. Risks of having the ABAP Debugger enabled in production environment](#3-Bypassing-security-controls-with-the-ABAP-Debugger)
+	- [3. Bypassing security controls with the ABAP Debugger](#3-Bypassing-security-controls-with-the-ABAP-Debugger)
 	- [4. SAP penetration testing using NMAP and the Metasploit framework](#4-SAP-penetration-testing-using-NMAP-and-the-Metasploit-framework)
 
 ----------------
@@ -98,17 +98,7 @@ Useful resources regarding SAP security
 - Remote access by software vendors is controlled adequately
 ```
 
-<i/> 1.2 - Review the security level of the SAP Architecture/Infrastructure</i>
-> Check that the IT infrastructure and network supporting the SAP ERP environment are properly configured to secure communications and operations.
-```
-> Firewall rules are implemented to restrict network access to the SAP ERP environment (i.e., application layer, server layer, database layer, etc.)
-> Patching and hardening of:
-  + the servers (e.g., SUSE Linux) supporting the SAP ERP environment
-  + the databases (e.g., SAP Hana db, Oracle db) supporting the SAP ERP environment
-  + the laptops and/or Citrix portal used by SAP users to log into SAP GUI client (if used)
-> …
-```
-<i/> 1.3 - Review the SAP network encryption settings - Secure Network Communications (SNC))</i>
+<i/> 1.2 - Review the SAP network encryption settings - Secure Network Communications (SNC)</i>
 > SAP Secure Network Communications (SNC)
 ```
 > SNC protects the data communication paths between the various client and server components of the SAP system that use the SAP protocols RFC or DIAG.
@@ -160,7 +150,7 @@ Other SNC parameters (example)
 > ccl/snc/server_session_key_types			ECDSA_P256:ECDSA_P384:ECDSA_P521
 ```
 
-<i/> 1.4 - Review the SAP security policy settings for logon and password </i>
+<i/> 1.3 - Review the SAP security policy settings for logon and password </i>
 > Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
 Parameters						Description
@@ -221,9 +211,60 @@ Easy ways to see which users have security policies assigned to them:
 Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 Option 2: Directly in table USR02 (field SECURITY_POLICY).
 
-<i/> 1.4 - Check that the SAP default passwords have been changed </i>
-> This can be done by testing manually the default logins and passwords or using a script.
-> This can also be done by dumping the USR02 table and performing password dictionary attack with tools like 'John the Ripper' (password cracking tool). 
+<i/> 1.4 - SAP password hash brute-force exercise </i>
+> Assess the robustness of SAP passwords by collecting a copy of the USR02 table and then performing password dictionary and brute-force attacks.
+  2 well knwon password cracking tools can be used: "John" or "HashCat".
+
+```
+SAP Password Hash Formats in the table USR02
+————————————————————————————————————————————
++ B/D = "BCODE" hash (MD5-based; Maximum pwd length=8, only upper case ASCII (B) or UTF-8 (D) characters)
++ F = "PASSCODE" hash (SHA1-based with fixed SALT; Maximum pwd length=40, case sensitive)
++ H = "PWDSALTEDHASH" hash (SHA1-based or SHA512-based with random SALT, Maximum pwd length=40, case sensitive)
+
+Notes:
+If the field "CODVN" = « G » then the password code versions/formats will be B & F
+If the field "CODVN" = « I » then the password code versions/formats will be B, F & H
+
+
+Example of SAP password hash cracking with the tool "John"
+——————————————————————————————————————————————————————————
+1. Command to crack "BCODE" hashes
+   $ john   --format=sapb   --wordlist=wordlist_file   --rules=all   --fork=10   hashes_file.txt
+
+2. Command to crack "PASSCODE" hashes
+   Required hash file format:  username:username$hash
+   $ john   --format=sapg   --wordlist=wordlist_file   --rules=all   --fork=10   hashes_file.txt
+
+3. Command to crack "PWDSALTEDHASH" hashes
+   Required hash file formats:  
+    > exemple for SHA-1 hashes: username:{x-issha, 1024}hash
+    > exemple for SHA-512 hashes: username:{x-isSHA512, 15000}hash 
+   $ john   --format=saph   --wordlist=wordlist_file   --rules=all   --fork=10   hashes_file.txt
+
+
+Example of SAP password hash cracking with the tool "Hashcat"
+—————————————————————————————————————————————————————————————
+1. Command to crack "BCODE" hashes
+   $ hashcat   -a 0   -m 7700   hashes_file   wordlist_file
+
+2. Command to crack "PASSCODE" hashes
+   $ hashcat   -a 0   -m 7800   hashes_file   wordlist_file
+
+3. Command to crack "PWDSALTEDHASH" hashes
+   $ hashcat   -a 0   -m 10300   hashes_file   wordlist_file
+```
+
+> Please note that 4 SAP tables contain password hashes: USR02, USH02, USRPWDHISTORY, USH02_ARC_TMP. Do not forget about views VUSER001 and VPWD_USR02 containing password hashes too.
+```
+> USR02: Contains the current user master record including the hash value(s) of the active password
+> USH02: Contains the change documents for the user master records including the hash value(s) of former SAP passwords
+> USRPWDHISTORY: Contains the user password history of every user
+> USH02_ARC_TMP: Used temporarily during archiving of user change documents
+```
+
+<i/> 1.5 - Check that the SAP default passwords have been changed </i>
+> If you could not do a password dictionary attack (check 1.4), at least verify manually or using a script that the default logins and passwords have been changed.
 ```
 + List of default SAP accounts and passwords
   
@@ -259,19 +300,8 @@ Option 2: Directly in table USR02 (field SECURITY_POLICY).
   MED 				CONTENTSERV 			System 				init1234 				X
   MED 				SMD_AGT 			System 				init1234    
 ```
-```
-SAP Password Hash Formats in table USR02
-—————————————————————————————————————————
-If the field "CODVN" = « G » then the password code versions/formats will be B & F
-If the field "CODVN" = « I » then the password code versions/formats will be B, F & H
 
-Notes:
-+ B = BCODE (MD5-based; Maximum pwd length=8, only upper case),
-+ F = PASSCODE (SHA1-based; Maximum pwd length=40, case sensitive)
-+ H = PWDSALTEDHASH  (iSSHA-1; Maximum pwd length=40, case sensitive)
-```
-
-<i/> 1.5 - Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
+<i/> 1.6 - Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
 ```
 > RSUSR003 – Check passwords for SAP* and DDIC 
 > RSUSR006 – locked users / unsuccessful login attempts
@@ -279,7 +309,7 @@ Notes:
 > RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
 ```
 
-<i/> 1.6 - Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
+<i/> 1.7 - Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
 ```
 > The "secinfo" security file is used to prevent unauthorized launching of external programs.
 > The file "reginfo" controls the registration of external programs in the gateway. 
@@ -310,7 +340,7 @@ P TP=cpict4							//Program cpict4 is allowed to be registered by any host.
 P TP=* USER=* HOST=internal					//Programs within the system are allowed to register.
 ```
 
-<i/> 1.7 - Review the SAP logging strategies / Audit trails</i>
+<i/> 1.8 - Review the SAP logging strategies / Audit trails</i>
 ```
 Tracing a Transaction
 —————————————————————
@@ -325,6 +355,16 @@ LOGS in SAP (programme RDDPRCHK)
   et preuve de leur exploitation.
 ```
 
+<i/> 1.9 - Review the security level of the IT Infrastructure supporting the SAP ERP environment</i>
+> Check that the IT infrastructure and network supporting the SAP ERP environment are properly configured to secure communications and operations.
+```
+> Firewall rules are implemented to restrict network access to the SAP ERP environment (i.e., application layer, server layer, database layer, etc.)
+> Patching and hardening of:
+  + the servers (e.g., SUSE Linux) supporting the SAP ERP environment
+  + the databases (e.g., SAP Hana db, Oracle db) supporting the SAP ERP environment
+  + the laptops and/or Citrix portal used by SAP users to log into SAP GUI client (if used)
+> …
+```
 ------------------
 
 ### 2. SAP User and Access Management Review
@@ -441,10 +481,12 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ```
 > SAP Quick Viewer : SQVI 
 > SAP Standard query : SQ01 
-> ST04
+> ST04 / DBACOCKPIT
 > SE16
 > SE16n
 > SCMP  (View / Table Comparison)
+> SM30
+> SM31
 > ...
 ```
 <i/> 2.4 - Weak parameter transactions </i>
