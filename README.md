@@ -135,19 +135,14 @@ Parameter name			     Description
 * snc/r3int_rfc_secure               Use SNC for internal RFC-Communications                                         
 * spnego/construct_SNC_name          Construct SNC name for given Kerberos User Name                                 
 
-Other SNC parameters (example)
-------------------------------
-> ccl/credential_encryption_algorithm : AES256
-> ccl/pkix/profile/sap_root/issuer 			CN=SAPSUPPORT Root CA 
-> ccl/pkix/profile/sap_root/revocation_check      	No
-> ccl/pse_encryption_algorithm 				PBES2-AES256-SHA256
+Other SNC parameters (examples)
 > ccl/snc/client_accepted_signature_algorithms    	SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
-> ccl/snc/client_cipher_suites				HIGH
-> ccl/snc/client_protocol 				2010_1_1:2010_1_0
-> ccl/snc/server_accepted_signature_algorithms		SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
-> ccl/snc/server_cipher_suites 				HIGH
-> ccl/snc/server_protocol 				2010_1_1:2010_1_0 
-> ccl/snc/server_session_key_types			ECDSA_P256:ECDSA_P384:ECDSA_P521
+> ccl/snc/client_cipher_suites				                 HIGH
+> ccl/snc/client_protocol 				                     2010_1_1:2010_1_0
+> ccl/snc/server_accepted_signature_algorithms		   SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
+> ccl/snc/server_cipher_suites 				                HIGH
+> ccl/snc/server_protocol 				                     2010_1_1:2010_1_0 
+> ccl/snc/server_session_key_types			              ECDSA_P256:ECDSA_P384:ECDSA_P521
 ```
 
 <i/> 1.3 - Review the SAP security policy settings for logon and password </i>
