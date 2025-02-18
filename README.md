@@ -109,7 +109,7 @@ Useful resources regarding SAP security
   + Integrity protection
   + Privacy protection
 ```
-> To audit the SNC settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM). The default settings are not 
+> To audit the SNC settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM).
 ```
 Parameter name			     Description
 ———————————————————————————————————————————————————————————————————————————————————————————
@@ -151,7 +151,7 @@ Other SNC parameters (example)
 ```
 
 <i/> 1.3 - Review the SAP security policy settings for logon and password </i>
-> Collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
+> To audit the SAP security policy settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
 ```
 Parameters						Description
 ————————————————————————————————————————————————————————————————————————————————————————————————
@@ -264,7 +264,7 @@ Example of SAP password hash cracking with the tool "Hashcat"
 ```
 
 <i/> 1.5 - Check that the SAP default passwords have been changed </i>
-> If you could not do a password dictionary attack (check 1.4), at least verify manually or using a script that the default logins and passwords have been changed.
+> If you can't do a SAP password hash brute-force exercise (check 1.4), at least verify manually or using a script that the default logins and passwords have been changed.
 ```
 + List of default SAP accounts and passwords
   
