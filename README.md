@@ -27,6 +27,7 @@ Useful tools for auditing SAP
 ➤ NMAP - Network port scanner (https://nmap.org)
 ➤ Metasploit penetration testing framework (https://www.metasploit.com) 
 ➤ 'John the Ripper' - Password cracker (https://www.openwall.com/john/)
+➤ Hashcat - Password cracker (https://hashcat.net/hashcat/)
 ➤ Various scripts (source:kali/Github/your owns)
 ```
 ```
@@ -82,7 +83,7 @@ Useful resources regarding SAP security
 - Changes made to the data dictionary are authorized and reviewed regularly
 - Log and trace files are appropriately configured and secured
 - SAP ERP Remote Function Call (RFC) and Common Programming Interface — Communications (CPI-C) are secured
-- Access to information and information systems is authorized
+- Access to information and information systems is restricted
 - Information systems processing is protected physically from unauthorized access and from accidental or deliberate loss or damage
 - Information processing can be recovered and resumed after operations have been interrupted
 - Critical user activities can be maintained and recovered following interruption
@@ -109,8 +110,11 @@ Useful resources regarding SAP security
   + Integrity protection
   + Privacy protection
 ```
-> To audit the SNC settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM).
+> To audit the SNC settings, you can use the transaction code "SNC" that displays the current SNC settings configured for the SAP system. You can also review the "RSPARAM" report (Use the Tcode SA38 and then enter RSPARAM) which provides an overview of various system parameters, including those related to SNC.
 ```
+List of SNC settings displayed in the RSPARAM report
+====================================================
+
 Parameter name			     Description
 ———————————————————————————————————————————————————————————————————————————————————————————
 * rdisp/max_snc_hold_time            Maximum hold time while priv SNC                                                
@@ -137,17 +141,22 @@ Parameter name			     Description
 
 Other SNC parameters (examples)
 > ccl/snc/client_accepted_signature_algorithms    	SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
-> ccl/snc/client_cipher_suites				                 HIGH
-> ccl/snc/client_protocol 				                     2010_1_1:2010_1_0
-> ccl/snc/server_accepted_signature_algorithms		   SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
-> ccl/snc/server_cipher_suites 				                HIGH
-> ccl/snc/server_protocol 				                     2010_1_1:2010_1_0 
-> ccl/snc/server_session_key_types			              ECDSA_P256:ECDSA_P384:ECDSA_P521
+> ccl/snc/client_cipher_suites				HIGH
+> ccl/snc/client_protocol 				2010_1_1:2010_1_0
+> ccl/snc/server_accepted_signature_algorithms		SHA256_DSA:PKCS_BT_01_SHA256_RSA:PKCS_BT_01_SHA512_RSA:PKCS_
+> ccl/snc/server_cipher_suites 				IGH
+> ccl/snc/server_protocol 				2010_1_1:2010_1_0 
+> ccl/snc/server_session_key_types			ECDSA_P256:ECDSA_P384:ECDSA_P521
 ```
 
 <i/> 1.3 - Review the SAP security policy settings for logon and password </i>
-> To audit the SAP security policy settings, collect and review the "RSPARAM" configuration file (Use the Tcode SA38 and then enter RSPARAM)
+> In SAP systems, it is possible to create multiple security policies and assign them to users or roles. Security policies can define various parameters related to password complexity, expiration, lockout criteria, and other security-related logon settings. The transaction code for creating and managing security policies is "SECPOL" and the tables that store the configuration settings and the definition of security policies are "SCPOL" and "SECPOL_ATTR". Once a security policy is assigned to a user master record (table USR02), this determines the desired behavior.
+
+> To audit the SAP security policy settings, collect and review the "RSPARAM" report (Use the Tcode SA38 and then enter RSPARAM) which provides an overview of various profile & system parameters, including those that manage password policies and logon settings. Please note, that the profile parameters showed in the "RSAPARAM" report are only relevant for the user master records for which no security policy has been assigned i.e. accounts for which the field "SECURITY_POLICY" is empty in the table "USR02".
 ```
+List of parameters related to logon and password policies displayed in the RSPARAM report
+==========================================================================================
+
 Parameters						Description
 ————————————————————————————————————————————————————————————————————————————————————————————————
 * login/accept_sso2_ticket                        	Accept SSO tickets for this (component) system                                  
@@ -200,11 +209,54 @@ NOTE: if multi-login is disabled some users can still be permitted multiple logi
       can be listed which can be permitted to logon multiple times
 ```
 
-> Notes: 
-The administration of security policies can be performed via the transaction SECPOL, which is secured by two authorization objects: S_SECPOL is checked during the maintenance of the policies themselves, while S_SECPOL_A is used to define the values that may be assigned to the security policy attributes.
-Easy ways to see which users have security policies assigned to them:
-Option 1:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
-Option 2: Directly in table USR02 (field SECURITY_POLICY).
+> Check if multiple security policies have been created and audit them (if any) by reviewing the content of the tables "SECPOL" & "SECPOL_ATTR". In addition, if multiple security policies have been created, audit which security policy is assigned to each user by looking at the field "SECURITY_POLICY" in the table "USR02" (tcode SE16/SE16n).
+```
+Example of data stored in the SCPOL table
+==========================================
+
+POLICY_NAME	DESCRIPTION			MIN_PASSWORD_LENGTH	PASSWORD_EXPIRATION_TIME	PASSWORD_COMPLEXITY	LOCKOUT_THRESHOLD	LOCKOUT_DURATION
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+POLICY_STANDARD	Standard security policy	8			90				Yes			5			30
+POLICY_ADMIN	Admin security policy		12			30				Yes			3			60
+
+
+Example of data stored in the SECPOL_ATTR table
+================================================
+
+Password rules
+Security policy attribute	Corresponding profile parameter	 Description
+------------------------------------------------------------------------------------------------
+CHECK_PASSWORD_BLACKLIST	( none )			Check the password blacklist
+MIN_PASSWORD_DIGITS		login/min_password_digits	Minimum number of digits
+MIN_PASSWORD_LENGTH		login/min_password_lng		Minimum password length
+MIN_PASSWORD_LETTERS		login/min_password_letters	Minimum number of letters
+MIN_PASSWORD_LOWERCASE		login/min_password_lowercase	Minimum number of lowercase letters
+MIN_PASSWORD_SPECIALS		login/min_password_specials	Minimum number of special characters
+MIN_PASSWORD_UPPERCASE		login/min_password_uppercase	Minimum number of uppercase letters
+
+Password change policies
+Security policy attribute		Corresponding profile parameter	 Description
+------------------------------------------------------------------------------------------------
+MIN_PASSWORD_CHANGE_WAITTIME		login/password_change_waittime			Minimum wait time for password change
+MIN_PASSWORD_DIFFERENCE			login/min_password_diff				No. of different characters when changing
+PASSWORD_CHANGE_FOR_SSO			login/password_change_for_SSO			Password change requirement for SSO logons
+PASSWORD_CHANGE_INTERVAL		login/password_expiration_time			Interval for regular password changes
+PASSWORD_COMPLIANCE_TO_CURRENT_POLICY	login/password_compliance_to_current_policy	Password change after rule tightening
+PASSWORD_HISTORY_SIZE			login/password_history_size			Size of the password history
+
+Logon restrictions
+Security policy attribute		Corresponding profile parameter	 	Description
+------------------------------------------------------------------------------------------------
+DISABLE_PASSWORD_LOGON			login/disable_password_logon,    	Disable password logon
+					login/password_logon_usergroup		
+DISABLE_TICKET_LOGON			( none )				Disable ticket logon
+MAX_FAILED_PASSWORD_LOGON_ATTEMPTS	login/fails_to_user_lock		Maximum number of failed attempts
+MAX_PASSWORD_IDLE_INITIAL		login/password_max_idle_initial		Validity of unused initial passwords
+MAX_PASSWORD_IDLE_PRODUCTIVE		login/password_max_idle_productive	Validity of unused productive passwords
+PASSWORD_LOCK_EXPIRATION		login/failed_user_auto_unlock		Automatic expiration of password lock
+
+```
+> Other useful check:  SUIM: “Users > by Complex Selection Criteria” or “Users > by Logon Date and Password Change”
 
 <i/> 1.4 - SAP password hash brute-force exercise </i>
 > Assess the robustness of SAP passwords by collecting a copy of the USR02 table and then performing password dictionary and brute-force attacks.
@@ -405,7 +457,14 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ```
 
 <i/> 2.2 - Review who has access (and with which permissions) to the following list of powerful SAP transactions </i>
+> Option 1 - The SUIM transaction can be used for user information system and includes options to view roles, authorizations, and transactions associated with roles.
+
+> Option 2 - The transactions PFCG can be used to view the roles and their associated transactions. By entering the role name, you can see all the transactions that are granted to that role, along with any associated authorization objects.
+
+> Option 3 - Extract and cross-check the content of the following SAP tables: "AGR_1251" (it contains roles and authorization objects), "AGR_1252" (it contains roles and associated transactions), "USR04" and "AGR_USERS" (they both allow to list the accounts member of roles) 
 ```
+List of powerful or sensitive SAP transactions
+===============================================
 > DBxx  			– Database related transactions
 > SCC4, SCC5 			- Client administration
 > SE01, SE10 			- CTS / TMS commands
@@ -469,7 +528,8 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 	
 > SE06				- Set Up Transport Organizer
 > STMS				- Transport Management System
-> SCC4				- (customize it to ztcode) - Administrationdes mandants 
+> SCC4				- (customize it to ztcode) - Administrationdes mandants
+<SNIP>
 ```
 <i/> 2.3 - Focus on the SAP transactions that allow to display the tables containing the SAP password hashes </i>
 > Multiple SAP transactions can be used to display the table USR02 and/or the view VUSR02_PWD that contain the local password hashes.
