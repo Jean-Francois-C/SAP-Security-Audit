@@ -350,10 +350,9 @@ Example of SAP password hash cracking with the tool "Hashcat"
 
 <i/> 1.6 - Standard Security Reports to run (RSUSR via AID, SA38, or SUIM) </i>
 ```
-> RSUSR003 – Check passwords for SAP* and DDIC 
-> RSUSR006 – locked users / unsuccessful login attempts
-> RSUSR200 - Users with original passwords, users not logged in for xx days, users who have not changed password in xx days
-> RSUSR002 - Can be used to determine who has access to powerful BASIS transactions such as the following
+> RSUSR003 – Check passwords for SAP* and DDIC
+> RSUSR002 - Users with original passwords, users not logged in for xx days, users who have not changed password in xx days
+> RSUSR006 – Locked users / unsuccessful login attempts
 ```
 
 <i/> 1.7 - Review the SAP Gateway Security Files (SECINFO and REGINFO)</i>
@@ -416,7 +415,7 @@ LOGS in SAP (programme RDDPRCHK)
 
 ### 2. SAP User and Access Management Review
 
-<i/> 2.1 - Types of users in SAP </i>
+<i/> 2.1 - User types in SAP </i>
 > There are five types of users in SAP (useful link: https://www.stechies.com/type-of-users-in-sap/)
 ```
 Dialog users (A)
@@ -457,11 +456,13 @@ To assign a reference user to a dialog user, specify it when maintaining the dia
 ```
 
 <i/> 2.2 - Review who has access (and with which permissions) to the following list of powerful SAP transactions </i>
-> Option 1 - The SUIM transaction can be used for user information system and includes options to view roles, authorizations, and transactions associated with roles.
+> Technique 1 - Run the report "RSUSR200" which is used for analyzing user authorization data. Specifically, it provides a detailed overview of user master records and the authorizations assigned to users within the SAP system.
 
-> Option 2 - The transactions PFCG can be used to view the roles and their associated transactions. By entering the role name, you can see all the transactions that are granted to that role, along with any associated authorization objects.
+> Technique 2 - Use the SUIM transaction that includes options to view roles, authorizations, and transactions associated with roles.
 
-> Option 3 - Extract and cross-check the content of the following SAP tables: "AGR_1251" (it contains roles and authorization objects), "AGR_1252" (it contains roles and associated transactions), "USR04" and "AGR_USERS" (they both allow to list the accounts member of roles) 
+> Technique 3 - Use the PFCG transation can be used to view the roles and their associated transactions. By entering the role name, you can see all the transactions that are granted to that role, along with any associated authorization objects.
+
+> Technique 4 - Extract and cross-check the content of the following SAP tables: "AGR_1251" (it contains roles and authorization objects), "AGR_1252" (it contains roles and associated transactions), "USR04" and "AGR_USERS" (they both allow to list the accounts member of roles) 
 ```
 List of powerful or sensitive SAP transactions
 ===============================================
