@@ -285,8 +285,8 @@ Example of SAP password hash cracking with the tool "John"
 
 3. Command to crack "PWDSALTEDHASH" hashes
    Required hash file formats:  
-    > exemple for SHA-1 hashes: username:{x-issha, 1024}hash
-    > exemple for SHA-512 hashes: username:{x-isSHA512, 15000}hash 
+    > example for SHA-1 hashes: username:{x-issha, 1024}hash
+    > example for SHA-512 hashes: username:{x-isSHA512, 15000}hash 
    $ john   --format=saph   --wordlist=wordlist_file   --rules=all   --fork=10   hashes_file.txt
 
 
